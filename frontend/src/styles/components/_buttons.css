@@ -1,0 +1,33 @@
+@layer components {
+  .btn {
+    @apply font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-600 hover:bg-secondary-700 text-white focus:ring-secondary-500;
+  }
+
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white focus:ring-green-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white focus:ring-red-500;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-current hover:bg-opacity-10;
+  }
+
+  .btn-sm {
+    @apply py-1 px-3 text-sm;
+  }
+
+  .btn-lg {
+    @apply py-3 px-6 text-lg;
+  }
+}

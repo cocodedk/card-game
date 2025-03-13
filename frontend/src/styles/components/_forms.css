@@ -1,0 +1,41 @@
+@layer components {
+  .form-group {
+    @apply mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  }
+
+  .input {
+    @apply border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 w-full
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+           bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .error-message {
+    @apply text-red-500 text-sm mt-1;
+  }
+
+  .success-message {
+    @apply bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4;
+  }
+
+  .checkbox {
+    @apply h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded;
+  }
+
+  .radio {
+    @apply h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300;
+  }
+
+  .select {
+    @apply border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 w-full
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+           bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+  }
+}
