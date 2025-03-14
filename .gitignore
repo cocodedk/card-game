@@ -47,4 +47,3 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo
-.env
