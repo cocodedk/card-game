@@ -1,10 +1,8 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .services import GameService
-from .models import Game, Player, Card, Deck, GamePlayer
-from django.contrib.auth.models import User
-from authentication.models import UserProfile
+from ..services import GameService
+from ..models import Game, Player
 
 class GameViewSet(viewsets.ViewSet):
     permission_classes = (permissions.IsAuthenticated,)
