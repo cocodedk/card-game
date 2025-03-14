@@ -50,7 +50,7 @@ const PlayerRegistration: React.FC = () => {
     setSuccess('');
 
     try {
-      const response = await axios.post('/api/players/register/', {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/players/register/`, {
         username: formData.username,
         email: formData.email,
         password: formData.password,

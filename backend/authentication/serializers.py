@@ -1,35 +1,77 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
 from .models import UserProfile
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name')
-        read_only_fields = ('id',)
+class UserSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True, source='user_id')
+    username = serializers.CharField(read_only=True)
+    email = serializers.CharField(read_only=True)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+class UserProfileSerializer(serializers.Serializer):
+    uid = serializers.CharField(read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    email = serializers.CharField(read_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    created_at = serializers.DateTimeField(read_only=True)
 
-    class Meta:
-        model = UserProfile
-        fields = ('id', 'user', 'neo4j_player_id')
-        read_only_fields = ('id', 'neo4j_player_id')
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.save()
+        return instance
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    password_confirm = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'password_confirm', 'first_name', 'last_name')
+class RegisterSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+    first_name = serializers.CharField(required=False, default="")
+    last_name = serializers.CharField(required=False, default="")
 
     def validate(self, data):
-        if data['password'] != data['password_confirm']:
+        if data['password'] != data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match")
+
+        # Check if username already exists
+        try:
+            UserProfile.nodes.get(username=data['username'])
+            raise serializers.ValidationError("Username already exists")
+        except UserProfile.DoesNotExist:
+            pass
+
+        # Check if email already exists
+        try:
+            UserProfile.nodes.get(email=data['email'])
+            raise serializers.ValidationError("Email already exists")
+        except UserProfile.DoesNotExist:
+            pass
+
         return data
 
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        user = User.objects.create_user(**validated_data)
-        return user
+        validated_data.pop('confirm_password')
+        password = validated_data.pop('password')
+
+        # Generate a unique user_id
+        # Get the highest user_id or start with 1
+        try:
+            highest_user = UserProfile.nodes.order_by('-user_id').first()
+            next_id = highest_user.user_id + 1 if highest_user else 1
+        except Exception:
+            next_id = 1
+
+        # Create UserProfile with hashed password
+        profile = UserProfile(
+            user_id=next_id,
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
+        )
+        profile.save()
+        profile.set_password(password)
+
+        return profile

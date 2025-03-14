@@ -1,10 +1,9 @@
 from neomodel import (
     StructuredNode, StringProperty, IntegerProperty,
     DateTimeProperty, BooleanProperty, JSONProperty,
-    RelationshipTo, RelationshipFrom, Relationship,
-    One, ZeroOrOne, ZeroOrMore
+    RelationshipTo, RelationshipFrom,
+    One, ZeroOrOne
 )
-from django.contrib.auth.models import User
 import uuid
 from datetime import datetime
 
@@ -15,6 +14,8 @@ class Player(StructuredNode):
     display_name = StringProperty(default="")
     avatar = StringProperty(default="default_avatar.png")
     created_at = DateTimeProperty(default=datetime.now)
+    date_of_birth = StringProperty(default="")
+    callsign = StringProperty(default="")
 
     # Relationships
     games = RelationshipTo('Game', 'PARTICIPATES_IN')

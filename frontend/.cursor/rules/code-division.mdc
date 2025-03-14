@@ -1,0 +1,22 @@
+---
+description: project-setup
+globs: 
+alwaysApply: false
+---
+# Frontend Rules for CARD-GAME
+
+## Code Division
+- The project is split into two directories: `backend/` for Django backend code and `frontend/` for React/Next.js frontend code.
+- Backend code (`backend/`) handles API logic, database interactions (Neo4j), caching (Redis), and server-side functionality. It serves the API at `http://localhost:8000`.
+- Frontend code (`frontend/`) manages the user interface, client-side logic, and browser interactions. It runs on `http://localhost:3000` and communicates with the backend via API calls.
+- When working in the frontend container (`card-game-frontend-1`), only edit files in `frontend/`. Do not attempt to modify `backend/` files directly, as they are not accessible in this container.
+
+## Frontend Development Guidelines
+- Use React functional components for all UI elements (e.g., `function CardComponent() { ... }`).
+- Prefer TypeScript for type safety; all files should have a `.tsx` extension unless specified otherwise.
+- Use kebab-case for file and folder names (e.g., `card-component.tsx`, `game-board/`).
+- Follow Next.js conventions for routing and API calls (e.g., use `pages/` for routing, `fetch` for API requests).
+- For backend API interactions, always use the URL defined in the environment variable `NEXT_PUBLIC_API_URL` (`http://localhost:8000` in development).
+- Add loading states to components that fetch data from the backend (e.g., use `useState` for `isLoading`).
+- Write unit tests for components using React Testing Library; place tests in a `__tests__/` folder (e.g., `card-component.test.tsx`).
+- Use Tailwind CSS for styling, following utility-first principles (e.g., `className="flex justify-center p-4"`).

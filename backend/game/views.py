@@ -13,9 +13,8 @@ class GameViewSet(viewsets.ViewSet):
         """List all games the user is participating in"""
         # Get the user's player node
         try:
-            profile = UserProfile.objects.get(user=request.user)
             player = Player.nodes.get(user_id=request.user.id)
-        except (UserProfile.DoesNotExist, Player.DoesNotExist):
+        except Player.DoesNotExist:
             return Response({"error": "Player not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Get all games the player is participating in

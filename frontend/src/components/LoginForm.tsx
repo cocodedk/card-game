@@ -25,7 +25,7 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('/api/players/login/', {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/players/login/`, {
         username: formData.username,
         password: formData.password,
       });

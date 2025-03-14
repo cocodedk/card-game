@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -25,7 +23,7 @@ services:
         condition: service_healthy
     # Use watchmedo to automatically reload when files change
     command: >
-      sh -c "export DJANGO_SETTINGS_MODULE=card_game.settings && export PYTHONPATH=/app && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- daphne -b 0.0.0.0 -p 8000 card_game.asgi:application"
+      sh -c "export DJANGO_SETTINGS_MODULE=card_game.settings && export PYTHONPATH=/app && chmod +x /app/configure_neo4j.py && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- /app/configure_neo4j.py daphne -b 0.0.0.0 -p 8000 card_game.asgi:application"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
       interval: 30s
@@ -64,10 +62,10 @@ services:
       - neo4j_logs:/logs
     healthcheck:
       test: ["CMD", "wget", "-O", "/dev/null", "-q", "http://localhost:7474"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
   redis:
     image: redis:7.2.4-alpine

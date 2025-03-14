@@ -1,0 +1,17 @@
+---
+description: frontend-access
+globs: 
+alwaysApply: false
+---
+# Backend Rules for CARD-GAME
+
+## Code Division
+- The project is split into two directories: `backend/` for Django backend code and `frontend/` for React/Next.js frontend code.
+- Backend code (`backend/`) handles API logic, Neo4j/Redis interactions, and server-side functionality.
+- Frontend code (`frontend/`) handles UI, client-side logic, and browser interactions.
+- When working in the backend container (`card-game-backend-1`), only edit files in `backend/`. Do not attempt to modify `frontend/` files directly.
+
+## Browser Access for Frontend
+- To access or inspect frontend browser behavior (e.g., DOM, JavaScript execution), use `browsertools MCP`.
+- Example: If you need to check a frontend API call’s effect on the browser, use `browsertools MCP` to inspect the browser session instead of guessing or modifying frontend code.
+- Do not simulate browser behavior manually; rely on `browsertools MCP` for accurate frontend insights.

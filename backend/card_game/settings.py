@@ -43,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'card_game.middleware.Neo4jConfigMiddleware',
 ]
 
 ROOT_URLCONF = 'card_game.urls'
@@ -66,11 +67,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'card_game.wsgi.application'
 ASGI_APPLICATION = 'card_game.asgi.application'
 
+# We don't need a database for Django models
+# This is a minimal configuration to make Django happy
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',  # Use in-memory SQLite database
+    }
+}
+
 # Neo4j Database
-NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL', 'bolt://neo4j:password@localhost:7687')
+NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL', 'bolt://neo4j:password@neo4j:7687')
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'authentication.backends.Neo4jBackend',
+]
 
 # Channels configuration
 CHANNEL_LAYERS = {
@@ -102,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'authentication.jwt_auth.Neo4jJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -115,6 +130,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'USER_ID_FIELD': 'user_id',  # Use user_id instead of id
+    'USER_ID_CLAIM': 'user_id',  # Use user_id in the token claims
 }
 
 # CORS settings
@@ -122,6 +139,27 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:3000,http://127.0.0.1:3000'
 ).split(',')
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -135,3 +173,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# URL handling
+APPEND_SLASH = False  # Allow URLs without trailing slashes
+PREPEND_WWW = False
+USE_ETAGS = False
