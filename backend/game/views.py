@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .services import GameService
-from .models import Game, Player, Card, Deck
+from .models import Game, Player, Card, Deck, GamePlayer
 from django.contrib.auth.models import User
 from authentication.models import UserProfile
 
@@ -40,14 +40,24 @@ class GameViewSet(viewsets.ViewSet):
             if game.winner.all():
                 winner = game.winner.get().user_id
 
+            creator = None
+            if game.creator.all():
+                creator = game.creator.get().user_id
+
             game_data.append({
                 "game_id": game.game_id,
+                "game_type": game.game_type,
+                "max_players": game.max_players,
+                "time_limit": game.time_limit,
+                "use_ai": game.use_ai,
                 "status": game.status,
                 "current_turn": game.current_turn,
                 "created_at": game.created_at.isoformat() if game.created_at else None,
                 "started_at": game.started_at.isoformat() if game.started_at else None,
                 "ended_at": game.ended_at.isoformat() if game.ended_at else None,
+                "completed_at": game.completed_at.isoformat() if game.completed_at else None,
                 "players": players,
+                "creator": creator,
                 "current_player": current_player,
                 "winner": winner,
                 "rule_version": game.rule_version
@@ -58,14 +68,39 @@ class GameViewSet(viewsets.ViewSet):
     def create(self, request):
         """Create a new game"""
         try:
+            # Extract game configuration parameters
+            game_type = request.data.get('game_type', 'standard')
+            max_players = int(request.data.get('max_players', 2))
+            time_limit = int(request.data.get('time_limit', 30))
+            use_ai = request.data.get('use_ai', False)
+            rule_version = request.data.get('rule_version', '1.0')
+
+            # Validate parameters
+            if game_type not in ['standard', 'quick', 'tournament']:
+                return Response({"error": "Invalid game type"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if max_players < 2 or max_players > 8:
+                return Response({"error": "Max players must be between 2 and 8"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if time_limit < 5 or time_limit > 120:
+                return Response({"error": "Time limit must be between 5 and 120 minutes"}, status=status.HTTP_400_BAD_REQUEST)
+
             # Create the game
             game = GameService.create_game(
                 creator_id=request.user.id,
-                rule_version=request.data.get('rule_version', '1.0')
+                game_type=game_type,
+                max_players=max_players,
+                time_limit=time_limit,
+                use_ai=use_ai,
+                rule_version=rule_version
             )
 
             return Response({
                 "game_id": game.game_id,
+                "game_type": game.game_type,
+                "max_players": game.max_players,
+                "time_limit": game.time_limit,
+                "use_ai": game.use_ai,
                 "status": game.status,
                 "message": "Game created successfully"
             }, status=status.HTTP_201_CREATED)
@@ -84,14 +119,35 @@ class GameViewSet(viewsets.ViewSet):
                                status=status.HTTP_403_FORBIDDEN)
 
             # Format the response
-            players = [
-                {
+            players = []
+            for p in game.players.all():
+                # Find the GamePlayer for this player
+                game_player = None
+                for gp in p.game_players.all():
+                    try:
+                        if gp.game.get().game_id == game.game_id:
+                            game_player = gp
+                            break
+                    except:
+                        continue
+
+                player_data = {
                     "user_id": p.user_id,
                     "username": p.username,
-                    "display_name": p.display_name
+                    "display_name": p.display_name,
+                    "status": game_player.status if game_player else "unknown"
                 }
-                for p in game.players.all()
-            ]
+                players.append(player_data)
+
+            # Add AI players
+            for gp in game.game_players.all():
+                if gp.is_ai:
+                    ai_player = {
+                        "is_ai": True,
+                        "ai_difficulty": gp.ai_difficulty,
+                        "status": gp.status
+                    }
+                    players.append(ai_player)
 
             current_player = None
             if game.current_player.all():
@@ -101,14 +157,24 @@ class GameViewSet(viewsets.ViewSet):
             if game.winner.all():
                 winner = game.winner.get().user_id
 
+            creator = None
+            if game.creator.all():
+                creator = game.creator.get().user_id
+
             game_data = {
                 "game_id": game.game_id,
+                "game_type": game.game_type,
+                "max_players": game.max_players,
+                "time_limit": game.time_limit,
+                "use_ai": game.use_ai,
                 "status": game.status,
                 "current_turn": game.current_turn,
                 "created_at": game.created_at.isoformat() if game.created_at else None,
                 "started_at": game.started_at.isoformat() if game.started_at else None,
                 "ended_at": game.ended_at.isoformat() if game.ended_at else None,
+                "completed_at": game.completed_at.isoformat() if game.completed_at else None,
                 "players": players,
+                "creator": creator,
                 "current_player": current_player,
                 "winner": winner,
                 "rule_version": game.rule_version
@@ -119,6 +185,111 @@ class GameViewSet(viewsets.ViewSet):
             return Response({"error": "Game not found"}, status=status.HTTP_404_NOT_FOUND)
         except Player.DoesNotExist:
             return Response({"error": "Player not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def invite(self, request, pk=None):
+        """Invite a player to join a game"""
+        try:
+            player_id = request.data.get('player_id')
+
+            if not player_id:
+                return Response({"error": "Player ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            game_player = GameService.invite_player(
+                game_id=pk,
+                player_id=player_id,
+                inviter_id=request.user.id
+            )
+
+            return Response({
+                "message": "Player invited successfully",
+                "player_id": player_id,
+                "status": game_player.status
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def add_ai(self, request, pk=None):
+        """Add an AI player to a game"""
+        try:
+            difficulty = request.data.get('difficulty', 'medium')
+
+            if difficulty not in ['easy', 'medium', 'hard', 'expert']:
+                return Response({"error": "Invalid difficulty level"}, status=status.HTTP_400_BAD_REQUEST)
+
+            game_player = GameService.add_ai_player(
+                game_id=pk,
+                creator_id=request.user.id,
+                difficulty=difficulty
+            )
+
+            return Response({
+                "message": "AI player added successfully",
+                "difficulty": game_player.ai_difficulty,
+                "status": game_player.status
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        """Accept an invitation to join a game"""
+        try:
+            game_player = GameService.accept_invitation(
+                game_id=pk,
+                player_id=request.user.id
+            )
+
+            return Response({
+                "message": "Invitation accepted",
+                "status": game_player.status
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def decline(self, request, pk=None):
+        """Decline an invitation to join a game"""
+        try:
+            game_player = GameService.decline_invitation(
+                game_id=pk,
+                player_id=request.user.id
+            )
+
+            return Response({
+                "message": "Invitation declined",
+                "status": game_player.status
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def search_players(self, request):
+        """Search for players by username"""
+        try:
+            query = request.query_params.get('query', '')
+
+            if not query:
+                return Response({"error": "Search query is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            players = GameService.search_players(
+                query=query,
+                current_user_id=request.user.id
+            )
+
+            player_data = [
+                {
+                    "user_id": p.user_id,
+                    "username": p.username,
+                    "display_name": p.display_name
+                }
+                for p in players
+            ]
+
+            return Response(player_data)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -146,9 +317,8 @@ class GameViewSet(viewsets.ViewSet):
             game = Game.nodes.get(game_id=pk)
             player = Player.nodes.get(user_id=request.user.id)
 
-            # Check if the user is the creator (first player)
-            players = list(game.players.all())
-            if not players or players[0].user_id != request.user.id:
+            # Check if the user is the creator
+            if not game.creator.is_connected(player):
                 return Response({"error": "Only the game creator can start the game"},
                                status=status.HTTP_403_FORBIDDEN)
 

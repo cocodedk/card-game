@@ -5,6 +5,12 @@ from .views import GameViewSet
 router = DefaultRouter()
 router.register(r'', GameViewSet, basename='game')
 
-urlpatterns = [
+# Define custom routes for the viewset
+custom_routes = [
+    # Player search endpoint
+    path('search/players/', GameViewSet.as_view({'get': 'search_players'}), name='player-search'),
+]
+
+urlpatterns = custom_routes + [
     path('', include(router.urls)),
 ]

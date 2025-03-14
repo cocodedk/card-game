@@ -1,0 +1,121 @@
+---
+description: how to create the game
+globs: 
+alwaysApply: false
+---
+# Backend Task List for Game Creation
+
+Based on the frontend implementation we've created, here's a comprehensive task list for the backend changes needed to support the game creation functionality:
+
+## 1. Game Model and Database Schema
+
+- [ ] Create a `Game` model with the following fields:
+  - `id` (UUID)
+  - `creator` (relationship to Player model)
+  - `game_type` (string: "standard", "quick", "tournament")
+  - `max_players` (integer)
+  - `time_limit` (integer, minutes)
+  - `use_ai` (boolean)
+  - `status` (string: "created", "waiting", "in_progress", "completed")
+  - `created_at` (datetime)
+  - `started_at` (datetime, nullable)
+  - `completed_at` (datetime, nullable)
+
+- [ ] Create a `GamePlayer` model to track players in a game:
+  - `game` (relationship to Game model)
+  - `player` (relationship to Player model)
+  - `is_ai` (boolean)
+  - `ai_difficulty` (string, nullable: "easy", "medium", "hard", "expert")
+  - `joined_at` (datetime)
+  - `status` (string: "invited", "accepted", "declined", "left")
+
+## 2. API Endpoints
+
+- [ ] Create Game API (`POST /api/games/`)
+  - Accepts game configuration parameters
+  - Creates a new game record
+  - Adds the creator as the first player
+  - Returns the game ID and details
+
+- [ ] Invite Player API (`POST /api/games/{gameId}/invite/`)
+  - Accepts player ID to invite
+  - Creates a GamePlayer record with "invited" status
+  - Sends notification to the invited player
+  - Returns success/failure status
+
+- [ ] Player Search API (`GET /api/players/search/?query={query}`)
+  - Searches players by username or email
+  - Returns list of matching players with IDs and usernames
+  - Excludes the current player from results
+
+- [ ] Start Game API (`POST /api/games/{gameId}/start/`)
+  - Validates game can be started (minimum players, etc.)
+  - Updates game status to "in_progress"
+  - Sets up initial game state
+  - Returns success/failure status
+
+- [ ] Game Status API (`GET /api/games/{gameId}/`)
+  - Returns current game state, players, and status
+  - Used for polling game status
+
+## 3. AI Player Implementation
+
+- [ ] Create AI player service
+  - Logic to create AI players with different difficulty levels
+  - Add AI players to a game when requested
+
+- [ ] AI decision-making algorithms
+  - Implement different strategies based on difficulty level
+  - Integrate with game rules engine
+
+## 4. Game Invitation System
+
+- [ ] Create invitation notification system
+  - In-app notifications for online players
+  - Email notifications for offline players
+
+- [ ] Implement invitation response endpoints
+  - Accept invitation (`POST /api/games/{gameId}/accept/`)
+  - Decline invitation (`POST /api/games/{gameId}/decline/`)
+
+## 5. Game State Management
+
+- [ ] Create game state initialization logic
+  - Set up initial deck, hands, board state
+  - Determine player order
+
+- [ ] Implement game state persistence
+  - Store current game state in database
+  - Support game resumption
+
+## 6. WebSocket Integration
+
+- [ ] Set up WebSocket connections for real-time updates
+  - Player joined/left notifications
+  - Game status changes
+  - Invitation responses
+
+- [ ] Implement authentication for WebSocket connections
+  - Validate user tokens
+  - Ensure only authorized players can access game data
+
+## 7. Testing
+
+- [ ] Unit tests for game creation logic
+- [ ] Integration tests for player invitation flow
+- [ ] End-to-end tests for complete game setup process
+- [ ] Load testing for concurrent game creation
+
+## 8. Documentation
+
+- [ ] API documentation for all new endpoints
+- [ ] Database schema documentation
+- [ ] Developer guide for game creation flow
+
+## 9. Deployment
+
+- [ ] Database migrations for new models
+- [ ] Deployment scripts for new services
+- [ ] Monitoring setup for game creation metrics
+
+This task list covers all the backend changes needed to support the game creation functionality we've implemented in the frontend. Each task can be assigned to team members and tracked through your project management system.

@@ -184,7 +184,10 @@ const Dashboard: React.FC = () => {
                 <span className="text-lg mb-1">Find Game</span>
                 <span className="text-sm">Join an existing game</span>
               </button>
-              <button className="btn-secondary p-4 flex flex-col items-center justify-center">
+              <button
+                onClick={() => router.push('/game/start')}
+                className="btn-secondary p-4 flex flex-col items-center justify-center"
+              >
                 <span className="text-lg mb-1">Create Game</span>
                 <span className="text-sm">Start a new game</span>
               </button>
