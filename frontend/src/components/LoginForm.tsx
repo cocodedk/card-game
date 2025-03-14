@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { storeTokens, setAuthHeader } from '../utils/auth';
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -28,15 +29,52 @@ const LoginForm: React.FC = () => {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/players/login/`, {
         username: formData.username,
         password: formData.password,
+      }, {
+        withCredentials: true
       });
+
+      // Store tokens in localStorage and set auth header
+      if (response.data.tokens) {
+        const { access, refresh } = response.data.tokens;
+        storeTokens(access, refresh);
+        setAuthHeader(access);
+      }
 
       // Redirect to dashboard or game page on successful login
       router.push('/dashboard');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setErrors(error.response.data);
+        const responseData = error.response.data;
+        const processedErrors: Record<string, string> = {};
+
+        // Handle non-field errors (often returned as 'detail' or 'non_field_errors')
+        if (responseData.detail) {
+          processedErrors.general = responseData.detail;
+        } else if (responseData.non_field_errors) {
+          processedErrors.general = Array.isArray(responseData.non_field_errors)
+            ? responseData.non_field_errors.join(', ')
+            : responseData.non_field_errors;
+        } else if (error.response.status === 401) {
+          // Handle 401 Unauthorized errors
+          processedErrors.general = 'Invalid username or password';
+        }
+
+        // Process all field errors
+        Object.entries(responseData).forEach(([key, value]) => {
+          // Skip non-field errors already processed
+          if (key !== 'detail' && key !== 'non_field_errors') {
+            processedErrors[key] = Array.isArray(value) ? value.join(', ') : String(value);
+          }
+        });
+
+        // If no specific errors were found, add a generic error
+        if (Object.keys(processedErrors).length === 0) {
+          processedErrors.general = 'Login failed. Please check your credentials and try again.';
+        }
+
+        setErrors(processedErrors);
       } else {
-        setErrors({ general: 'An error occurred during login' });
+        setErrors({ general: 'An error occurred during login. Please try again.' });
       }
       setIsLoading(false);
     }
@@ -45,6 +83,13 @@ const LoginForm: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 my-8">
       <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">Sign In</h2>
+
+      {/* Display general errors at the top of the form */}
+      {errors.general && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {errors.general}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-group">
@@ -98,8 +143,6 @@ const LoginForm: React.FC = () => {
             </a>
           </div>
         </div>
-
-        {errors.general && <div className="text-red-500 text-sm mt-1">{errors.general}</div>}
 
         <button
           type="submit"

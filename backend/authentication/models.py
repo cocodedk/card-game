@@ -13,6 +13,22 @@ class UserProfile(StructuredNode):
     password = StringProperty()  # Will store hashed password
     created_at = DateTimeProperty(default_now=True)
 
+    # Django authentication system compatibility properties
+    @property
+    def is_authenticated(self):
+        """Always return True for authenticated users"""
+        return True
+
+    @property
+    def is_anonymous(self):
+        """Always return False for authenticated users"""
+        return False
+
+    @property
+    def is_active(self):
+        """Return True to indicate this user is active"""
+        return True
+
     def set_password(self, raw_password):
         """Hash and set the password"""
         self.password = make_password(raw_password)
