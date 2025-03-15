@@ -1,8 +1,8 @@
 from neomodel import (
-    StructuredNode, StringProperty, IntegerProperty,
+    StringProperty, IntegerProperty,
     JSONProperty, RelationshipFrom
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class Card(GameBaseModel):
     """Card model representing a game card"""

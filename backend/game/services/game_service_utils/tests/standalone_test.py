@@ -42,7 +42,7 @@ sys.modules['backend.game.models'] = MagicMock()
 sys.modules['backend.game.models'].GameRuleSet = MockGameRuleSet
 
 # Now import the function to test
-from backend.game.services.game_service.create_idiot_rule_set import create_idiot_rule_set
+from backend.game.services.game_service_utils.create_idiot_rule_set import create_idiot_rule_set
 
 
 class TestCreateIdiotRuleSet(unittest.TestCase):

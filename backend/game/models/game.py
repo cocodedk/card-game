@@ -3,7 +3,7 @@ from neomodel import (
     DateTimeProperty, BooleanProperty, JSONProperty,
     RelationshipFrom, RelationshipTo, One, ZeroOrOne
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class Game(GameBaseModel):
     """Game model representing a game session"""
@@ -33,15 +33,15 @@ class Game(GameBaseModel):
     tournament_data = JSONProperty(default={})
 
     # Relationships
-    players = RelationshipFrom('game.models.player.Player', 'PARTICIPATES_IN')
-    creator = RelationshipTo('game.models.player.Player', 'CREATED_BY', cardinality=One)
-    decks = RelationshipTo('game.models.deck.Deck', 'USES')
-    current_player = RelationshipTo('game.models.player.Player', 'CURRENT_TURN', cardinality=ZeroOrOne)
-    winner = RelationshipTo('game.models.player.Player', 'WON_BY', cardinality=ZeroOrOne)
-    game_cards = RelationshipTo('game.models.game_card.GameCard', 'HAS_CARD')
-    rule_set = RelationshipTo('game.models.game_rule_set.GameRuleSet', 'USES_RULES', cardinality=One)
-    game_players = RelationshipTo('game.models.game_player.GamePlayer', 'HAS_PLAYER')
-    invited_groups = RelationshipTo('game.models.player_group.PlayerGroup', 'INVITED_GROUP')
-    participating_groups = RelationshipFrom('game.models.player_group.PlayerGroup', 'PARTICIPATED_IN')
-    parent_tournament = RelationshipTo('game.models.game.Game', 'PART_OF_TOURNAMENT', cardinality=ZeroOrOne)
-    tournament_games = RelationshipFrom('game.models.game.Game', 'PART_OF_TOURNAMENT')
+    players = RelationshipFrom('backend.game.models.player.Player', 'PARTICIPATES_IN')
+    creator = RelationshipTo('backend.game.models.player.Player', 'CREATED_BY', cardinality=One)
+    decks = RelationshipTo('backend.game.models.deck.Deck', 'USES')
+    current_player = RelationshipTo('backend.game.models.player.Player', 'CURRENT_TURN', cardinality=ZeroOrOne)
+    winner = RelationshipTo('backend.game.models.player.Player', 'WON_BY', cardinality=ZeroOrOne)
+    game_cards = RelationshipTo('backend.game.models.game_card.GameCard', 'HAS_CARD')
+    rule_set = RelationshipTo('backend.game.models.game_rule_set.GameRuleSet', 'USES_RULES', cardinality=One)
+    game_players = RelationshipTo('backend.game.models.game_player.GamePlayer', 'HAS_PLAYER')
+    invited_groups = RelationshipTo('backend.game.models.player_group.PlayerGroup', 'INVITED_GROUP')
+    participating_groups = RelationshipFrom('backend.game.models.player_group.PlayerGroup', 'PARTICIPATED_IN')
+    parent_tournament = RelationshipTo('backend.game.models.game.Game', 'PART_OF_TOURNAMENT', cardinality=ZeroOrOne)
+    tournament_games = RelationshipFrom('backend.game.models.game.Game', 'PART_OF_TOURNAMENT')

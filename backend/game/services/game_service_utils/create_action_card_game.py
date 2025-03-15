@@ -1,8 +1,8 @@
 from datetime import datetime
-from backend.game.models import Game, GameRuleSet, GamePlayer, GameState, GameCard, Player
-from backend.game.services.game_service.action import Action
-from backend.game.services.game_service.create_game_card import create_game_card
-from backend.game.services.game_service.create_deck import create_deck
+from backend.game.models import Game, GameRuleSet, GamePlayer, GameState, Player
+from backend.game.services.game_service_utils.action import Action
+from backend.game.services.game_service_utils.create_game_card import create_game_card
+from backend.game.services.game_service_utils.create_deck import create_deck
 
 def create_action_card_game(name, player_uids, rule_set_uid):
     """

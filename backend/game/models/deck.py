@@ -2,7 +2,7 @@ from neomodel import (
     StructuredNode, StringProperty,
     RelationshipFrom, RelationshipTo, One
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class Deck(GameBaseModel):
     """Deck model representing a collection of cards"""

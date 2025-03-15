@@ -1,4 +1,4 @@
-from .models import Game, Player, Card, Deck, GameCard, GameRuleSet, GameAction, GamePlayer, PlayerGroup, PlayerGroupInvitation
+from .models import Game, Player, GameCard, GameRuleSet, GameAction, GamePlayer, PlayerGroup, PlayerGroupInvitation
 import uuid
 from datetime import datetime
 from channels.layers import get_channel_layer

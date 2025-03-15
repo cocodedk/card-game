@@ -1,7 +1,7 @@
 from datetime import datetime
 from backend.game.models import Game, GameState, GameCard, GameAction, Player
 from backend.game.services.rule_interpreter.base import get_rule_interpreter
-from backend.game.services.game_service.action import Action
+from backend.game.services.game_service_utils.action import Action
 
 def play_card(game_uid, player_uid, card_uid):
     """

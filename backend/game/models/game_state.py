@@ -1,7 +1,7 @@
 from neomodel import (
     StringProperty, ArrayProperty, JSONProperty, RelationshipTo, BooleanProperty
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class GameState(GameBaseModel):
     """Model to store the current state of a game"""

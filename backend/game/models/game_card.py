@@ -2,7 +2,7 @@ from neomodel import (
     StringProperty, IntegerProperty,
     JSONProperty, RelationshipFrom, RelationshipTo, One
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class GameCard(GameBaseModel):
     """GameCard model representing a card instance in a game"""

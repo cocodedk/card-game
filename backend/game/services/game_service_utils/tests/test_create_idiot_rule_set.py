@@ -1,7 +1,7 @@
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
 
-from backend.game.services.game_service.create_idiot_rule_set import create_idiot_rule_set
+from backend.game.services.game_service_utils.create_idiot_rule_set import create_idiot_rule_set
 from backend.game.models import GameRuleSet
 
 

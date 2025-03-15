@@ -2,7 +2,7 @@ from neomodel import (
     StringProperty, BooleanProperty,
     RelationshipFrom, RelationshipTo, One
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class PlayerGroup(GameBaseModel):
     """PlayerGroup model representing a group of players that can be invited to games together"""

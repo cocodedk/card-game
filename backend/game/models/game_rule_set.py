@@ -4,7 +4,7 @@ from neomodel import (
 )
 from datetime import datetime
 import uuid
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class GameRuleSet(GameBaseModel):
     """GameRuleSet model for configurable game rules"""

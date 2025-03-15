@@ -2,10 +2,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
-from game.services.game_service import (
+from backend.game.services.game_service_utils import (
     create_action_card_game, play_card, create_uno_rule_set
 )
-from game.models.game_rule_set import GameRuleSet
+from backend.game.models.game_rule_set import GameRuleSet
 
 @csrf_exempt
 @require_http_methods(["POST"])

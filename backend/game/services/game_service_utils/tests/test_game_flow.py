@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from backend.game.services.game_service.create_idiot_rule_set import create_idiot_rule_set
+from backend.game.services.game_service_utils.create_idiot_rule_set import create_idiot_rule_set
 
 
 class GameFlowTests(TestCase):

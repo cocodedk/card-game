@@ -1,8 +1,8 @@
-from game.models import (
-    Game, GameRuleSet, GameState, Card, Player,
+from backend.game.models import (
+    Game, GameRuleSet, GameState, Player,
     GameCard, GamePlayer, GameAction
 )
-from game.services.rule_interpreter import get_rule_interpreter
+from backend.game.services.rule_interpreter import get_rule_interpreter
 import uuid
 from datetime import datetime
 

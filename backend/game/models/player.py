@@ -2,7 +2,7 @@ from neomodel import (
     StringProperty,
     RelationshipTo
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class Player(GameBaseModel):
     """Player model representing a user in the game context"""

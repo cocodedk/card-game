@@ -2,7 +2,7 @@ from neomodel import (
     StringProperty,
     JSONProperty, RelationshipTo, One, ZeroOrOne
 )
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class GameAction(GameBaseModel):
     """GameAction model for tracking game history"""

@@ -2,8 +2,8 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 import logging
-from ..services import GameService
-from ..models import Game, Player
+from backend.game.services import GameService
+from backend.game.models import Game, Player
 
 logger = logging.getLogger(__name__)
 

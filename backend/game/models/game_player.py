@@ -3,7 +3,7 @@ from neomodel import (
     DateTimeProperty, RelationshipFrom, One
 )
 from datetime import datetime
-from game.models.base import GameBaseModel
+from backend.game.models.base import GameBaseModel
 
 class GamePlayer(GameBaseModel):
     """GamePlayer model representing a player in a specific game"""

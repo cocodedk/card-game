@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from game.services.game_service import create_idiot_rule_set
+from game.services.game_service_utils import create_idiot_rule_set
 
 class Command(BaseCommand):
     help = 'Creates an Idiot card game rule set'
