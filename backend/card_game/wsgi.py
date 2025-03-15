@@ -2,6 +2,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'card_game.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.card_game.settings')
 
 application = get_wsgi_application()

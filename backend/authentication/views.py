@@ -1,10 +1,13 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, UserProfileSerializer, RegisterSerializer
+from .serializers import UserSerializer, UserProfileSerializer, RegisterSerializer, ChangePasswordSerializer
 from .models import UserProfile
-from game.models import Player
+from backend.game.models import Player
 from .jwt_auth import get_tokens_for_user
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
@@ -82,6 +85,47 @@ class LoginView(APIView):
             except UserProfile.DoesNotExist:
                 return Response({"error": "Invalid credentials"},
                               status=status.HTTP_401_UNAUTHORIZED)
+
+class LogoutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            # Get the refresh token from the request
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response({"error": "Refresh token is required"},
+                               status=status.HTTP_400_BAD_REQUEST)
+
+            # Blacklist the refresh token
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({"message": "Logout successful"},
+                           status=status.HTTP_200_OK)
+        except TokenError:
+            return Response({"error": "Invalid token"},
+                           status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            # Check if current password is correct
+            if not request.user.check_password(serializer.validated_data['current_password']):
+                return Response({"current_password": "Current password is incorrect"},
+                               status=status.HTTP_400_BAD_REQUEST)
+
+            # Set the new password
+            request.user.set_password(serializer.validated_data['new_password'])
+            request.user.save()
+
+            return Response({"message": "Password changed successfully"},
+                           status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)

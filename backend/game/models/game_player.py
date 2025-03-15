@@ -23,5 +23,5 @@ class GamePlayer(GameBaseModel):
     }, default='invited')
 
     # Relationships
-    game = RelationshipFrom('game.models.game.Game', 'HAS_PLAYER', cardinality=One)
-    player = RelationshipFrom('game.models.player.Player', 'HAS_GAME_PLAYER', cardinality=One)
+    game = RelationshipFrom('backend.game.models.game.Game', 'HAS_PLAYER', cardinality=One)
+    player = RelationshipFrom('backend.game.models.player.Player', 'HAS_GAME_PLAYER', cardinality=One)

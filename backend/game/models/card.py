@@ -16,6 +16,6 @@ class Card(GameBaseModel):
     abilities = JSONProperty(default={})
 
     # Relationships
-    owner = RelationshipFrom('game.models.player.Player', 'OWNS')
-    decks = RelationshipFrom('game.models.deck.Deck', 'CONTAINS')
-    game_instances = RelationshipFrom('game.models.game_card.GameCard', 'REPRESENTS')
+    owner = RelationshipFrom('backend.game.models.player.Player', 'OWNS')
+    decks = RelationshipFrom('backend.game.models.deck.Deck', 'CONTAINS')
+    game_instances = RelationshipFrom('backend.game.models.game_card.GameCard', 'REPRESENTS')

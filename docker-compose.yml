@@ -19,14 +19,14 @@ services:
       - REDIS_PORT=6379
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
       - PYTHONUNBUFFERED=1
-      - DJANGO_SETTINGS_MODULE=card_game.settings
+      - DJANGO_SETTINGS_MODULE=backend.card_game.settings
     depends_on:
       neo4j:
         condition: service_healthy
       redis:
         condition: service_healthy
     command: >
-      sh -c "export DJANGO_SETTINGS_MODULE=card_game.settings && export PYTHONPATH=/app && chmod +x /app/backend/configure_neo4j.py && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- /app/backend/configure_neo4j.py daphne -b 0.0.0.0 -p 8000 card_game.asgi:application"
+      sh -c "export DJANGO_SETTINGS_MODULE=backend.card_game.settings && export PYTHONPATH=/app && chmod +x /app/backend/configure_neo4j.py && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- /app/backend/configure_neo4j.py daphne -b 0.0.0.0 -p 8000 backend.card_game.asgi:application"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
       interval: 30s

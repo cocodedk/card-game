@@ -10,6 +10,6 @@ class GameAction(GameBaseModel):
     action_data = JSONProperty()
 
     # Relationships
-    game = RelationshipTo('game.models.game.Game', 'OCCURRED_IN', cardinality=One)
-    player = RelationshipTo('game.models.player.Player', 'PERFORMED_BY', cardinality=ZeroOrOne)
-    affected_cards = RelationshipTo('game.models.game_card.GameCard', 'AFFECTED')
+    game = RelationshipTo('backend.game.models.game.Game', 'OCCURRED_IN', cardinality=One)
+    player = RelationshipTo('backend.game.models.player.Player', 'PERFORMED_BY', cardinality=ZeroOrOne)
+    affected_cards = RelationshipTo('backend.game.models.game_card.GameCard', 'AFFECTED')

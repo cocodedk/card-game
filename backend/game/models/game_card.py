@@ -16,6 +16,6 @@ class GameCard(GameBaseModel):
     state = JSONProperty(default={})
 
     # Relationships
-    game = RelationshipFrom('game.models.game.Game', 'HAS_CARD', cardinality=One)
-    card = RelationshipTo('game.models.card.Card', 'REPRESENTS', cardinality=One)
-    owner = RelationshipTo('game.models.player.Player', 'CONTROLLED_BY', cardinality=One)
+    game = RelationshipFrom('backend.game.models.game.Game', 'HAS_CARD', cardinality=One)
+    card = RelationshipTo('backend.game.models.card.Card', 'REPRESENTS', cardinality=One)
+    owner = RelationshipTo('backend.game.models.player.Player', 'CONTROLLED_BY', cardinality=One)

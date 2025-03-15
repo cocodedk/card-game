@@ -1,7 +1,8 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import UserProfile
 from rest_framework_simplejwt.models import TokenUser
+from .models import UserProfile
+
 
 class Neo4jJWTAuthentication(JWTAuthentication):
     """

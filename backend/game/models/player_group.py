@@ -12,6 +12,6 @@ class PlayerGroup(GameBaseModel):
     avatar = StringProperty(default="default_group.png")
 
     # Relationships
-    owner = RelationshipFrom('game.models.player.Player', 'OWNS', cardinality=One)
-    members = RelationshipFrom('game.models.player.Player', 'MEMBER_OF')
-    games = RelationshipTo('game.models.game.Game', 'PARTICIPATED_IN')
+    owner = RelationshipFrom('backend.game.models.player.Player', 'OWNS', cardinality=One)
+    members = RelationshipFrom('backend.game.models.player.Player', 'MEMBER_OF')
+    games = RelationshipTo('backend.game.models.game.Game', 'PARTICIPATED_IN')

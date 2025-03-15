@@ -66,3 +66,19 @@ class RegisterSerializer(serializers.Serializer):
         profile.set_password(password)
 
         return profile
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+    confirm_new_password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        # Check if new passwords match
+        if data['new_password'] != data['confirm_new_password']:
+            raise serializers.ValidationError({"confirm_new_password": "New passwords do not match"})
+
+        # Password complexity validation could be added here
+        if len(data['new_password']) < 8:
+            raise serializers.ValidationError({"new_password": "Password must be at least 8 characters long"})
+
+        return data

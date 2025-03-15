@@ -13,9 +13,9 @@ class Player(GameBaseModel):
     callsign = StringProperty(default="")
 
     # Relationships
-    games = RelationshipTo('game.models.game.Game', 'PARTICIPATES_IN')
-    cards = RelationshipTo('game.models.card.Card', 'OWNS')
-    decks = RelationshipTo('game.models.deck.Deck', 'CREATED')
-    game_players = RelationshipTo('game.models.game_player.GamePlayer', 'HAS_GAME_PLAYER')
-    owned_groups = RelationshipTo('game.models.player_group.PlayerGroup', 'OWNS')
-    member_of_groups = RelationshipTo('game.models.player_group.PlayerGroup', 'MEMBER_OF')
+    games = RelationshipTo('backend.game.models.game.Game', 'PARTICIPATES_IN')
+    cards = RelationshipTo('backend.game.models.card.Card', 'OWNS')
+    decks = RelationshipTo('backend.game.models.deck.Deck', 'CREATED')
+    game_players = RelationshipTo('backend.game.models.game_player.GamePlayer', 'HAS_GAME_PLAYER')
+    owned_groups = RelationshipTo('backend.game.models.player_group.PlayerGroup', 'OWNS')
+    member_of_groups = RelationshipTo('backend.game.models.player_group.PlayerGroup', 'MEMBER_OF')

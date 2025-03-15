@@ -16,7 +16,7 @@ class GameRuleSet(GameBaseModel):
     parameters = JSONProperty(default={})
 
     # Relationships
-    games = RelationshipFrom('game.models.game.Game', 'USES_RULES')
+    games = RelationshipFrom('backend.game.models.game.Game', 'USES_RULES')
 
     @classmethod
     def create_action_card_game(cls, name, description, card_actions, targeting_rules,

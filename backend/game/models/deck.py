@@ -10,6 +10,6 @@ class Deck(GameBaseModel):
     description = StringProperty()
 
     # Relationships
-    creator = RelationshipFrom('game.models.player.Player', 'CREATED', cardinality=One)
-    cards = RelationshipTo('game.models.card.Card', 'CONTAINS')
-    games = RelationshipFrom('game.models.game.Game', 'USES')
+    creator = RelationshipFrom('backend.game.models.player.Player', 'CREATED', cardinality=One)
+    cards = RelationshipTo('backend.game.models.card.Card', 'CONTAINS')
+    games = RelationshipFrom('backend.game.models.game.Game', 'USES')

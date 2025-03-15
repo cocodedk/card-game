@@ -14,10 +14,14 @@ custom_routes = [
     path('search/players/', GameViewSet.as_view({'get': 'search_players'}), name='player-search'),
 ]
 
+# Include the existing routes
 urlpatterns = custom_routes + [
     path('', include(router.urls)),
     path('games/create/', create_game, name='create_game'),
     path('games/<str:game_id>/play-card/', play_card_view, name='play_card'),
     path('rule-sets/', list_rule_sets, name='list_rule_sets'),
     path('rule-sets/create/', create_rule_set, name='create_rule_set'),
+
+    # Include the new API endpoints
+    path('api/', include('backend.game.api.urls')),
 ]
