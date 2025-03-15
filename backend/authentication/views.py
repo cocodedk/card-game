@@ -21,7 +21,7 @@ class RegisterView(generics.CreateAPIView):
 
         # Create Neo4j Player node
         player = Player(
-            user_id=profile.user_id,
+            uid=profile.uid,
             username=profile.username,
             display_name=f"{profile.first_name} {profile.last_name}".strip() or profile.username,
             date_of_birth=date_of_birth,
@@ -88,9 +88,8 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
 
     def get_object(self):
-        # Get the user_id from the authenticated user
-        user_id = self.request.user.user_id
-        return UserProfile.nodes.get(user_id=user_id)
+        # Get the uid from the authenticated user
+        return UserProfile.nodes.get(uid=self.request.user.uid)
 
 class CurrentUserView(APIView):
     permission_classes = (permissions.IsAuthenticated,)

@@ -1,6 +1,5 @@
 from django.urls import path, include
 from .views import health_check, register_player
-from authentication.views import RegisterView
 
 urlpatterns = [
     # Health check endpoint

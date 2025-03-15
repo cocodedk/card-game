@@ -1,14 +1,11 @@
 from neomodel import (
-    StructuredNode, StringProperty, DateTimeProperty,
+    StringProperty,
     RelationshipTo, One
 )
-import uuid
-from datetime import datetime
+from game.models.base import GameBaseModel
 
-class PlayerGroupInvitation(StructuredNode):
+class PlayerGroupInvitation(GameBaseModel):
     """Invitation to join a player group"""
-    invitation_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
-    created_at = DateTimeProperty(default=datetime.now)
     status = StringProperty(choices={
         'pending': 'Pending',
         'accepted': 'Accepted',

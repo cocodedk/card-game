@@ -1,18 +1,14 @@
 from neomodel import (
-    StructuredNode, StringProperty, BooleanProperty,
-    DateTimeProperty, RelationshipFrom, RelationshipTo, One
+    StringProperty, BooleanProperty,
+    RelationshipFrom, RelationshipTo, One
 )
-import uuid
-from datetime import datetime
+from game.models.base import GameBaseModel
 
-class PlayerGroup(StructuredNode):
+class PlayerGroup(GameBaseModel):
     """PlayerGroup model representing a group of players that can be invited to games together"""
-    group_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     name = StringProperty(index=True)
     description = StringProperty(default="")
     is_public = BooleanProperty(default=False)
-    created_at = DateTimeProperty(default=datetime.now)
-    updated_at = DateTimeProperty(default=datetime.now)
     avatar = StringProperty(default="default_group.png")
 
     # Relationships

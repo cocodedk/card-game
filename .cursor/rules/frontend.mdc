@@ -1,16 +1,9 @@
 ---
-description: project-setup
+description: frontend
 globs: 
 alwaysApply: false
 ---
 # Frontend Rules for CARD-GAME
-
-## Code Division
-- The project is split into two directories: `backend/` for Django backend code and `frontend/` for React/Next.js frontend code.
-- Backend code (`backend/`) handles API logic, database interactions (Neo4j), caching (Redis), and server-side functionality. It serves the API at `http://localhost:8000`.
-- Frontend code (`frontend/`) manages the user interface, client-side logic, and browser interactions. It runs on `http://localhost:3000` and communicates with the backend via API calls.
-- When working in the frontend container (`card-game-frontend-1`), only edit files in `frontend/`. Do not attempt to modify `backend/` files directly, as they are not accessible in this container due to isolated mounts.
-- To access backend code or logic (e.g., for debugging API endpoints), use the `FileSearch` Model Context Protocol (MCP) to search and view `backend/` files without editing them. Example: Use `FileSearch MCP` to inspect `authentication/views.py` for API response structures.
 
 ## Frontend Development Guidelines
 - Use React functional components for all UI elements (e.g., `function CardComponent() { ... }`).
@@ -24,7 +17,7 @@ alwaysApply: false
 - Ensure accessibility (a11y) by adding ARIA labels and keyboard navigation to interactive elements (e.g., buttons, forms).
 - Implement error boundaries for components that handle API calls to prevent app crashes (e.g., use `componentDidCatch` or `ErrorBoundary` from `react-error-boundary`).
 
-### Feature-Specific Guidelines: Enhance Authentication and Registration Components
+## Feature-Specific Guidelines: Enhance Authentication and Registration Components
 - **feat: Enhance authentication and registration components**
   - Add compatibility properties to `UserProfile` component for Django authentication (e.g., sync with JWT tokens from `rest_framework_simplejwt`).
   - Update `LoginForm` to handle token storage (e.g., store in `localStorage` or `context`) and error processing (e.g., display errors with `useState`).
@@ -32,8 +25,12 @@ alwaysApply: false
   - Configure global `axios` settings for authentication (e.g., add JWT headers) and error management (e.g., global error interceptor).
 - These changes streamline user authentication and registration, improving overall user experience.
 
-### Cross-Boundary Workflow
-- To implement features like authentication enhancements, use `FileSearch MCP` to view backend code (e.g., `authentication/views.py` for API endpoints) without editing it directly.
-- Example: If debugging a `LoginForm` API call, use `FileSearch MCP` to inspect the backend serializer in `authentication/serializers.py`, then adjust frontend logic accordingly.
-- For backend-to-frontend visibility, the backend container (`card-game-backend-1`) uses the `BrowserTools MCP` to inspect browser activity (e.g., DOM state, API call effects on the UI).
-- Run two Cursor instances: one for `card-game-frontend-1` (editing `frontend/`) and one for `card-game-backend-1` (editing `backend/`). The overhead is acceptable for maintaining separation.
+## Cross-Container Workflow
+- Both `frontend` and `backend` code are accessible in each container (`card-game-frontend-1` and `card-game-backend-1`). Edit files directly in your IDE as needed.
+- To inspect backend logic (e.g., API endpoints in `authentication/views.py`), view `/app/backend` files from the frontend container and adjust frontend code in `/app/frontend` accordingly.
+- Example: If debugging a `LoginForm` API call, check the backend serializer in `/app/backend/authentication/serializers.py`, then refine the frontend logic in `/app/frontend`.
+- Use `BrowserTools MCP` from the backend container to inspect browser activity (e.g., DOM state, API call effects on the UI) when needed.
+- A single IDE instance (e.g., Cursor or VS Code) can edit both `/app/frontend` and `/app/backend` by opening the container’s `/app` directory.
+
+## Do Not Start Any Servers
+- Do not attempt to manually start servers within the containers; rely on the existing `docker-compose.yml` configuration to manage server processes.

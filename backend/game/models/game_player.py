@@ -1,13 +1,12 @@
 from neomodel import (
-    StructuredNode, StringProperty, BooleanProperty,
+    StringProperty, BooleanProperty,
     DateTimeProperty, RelationshipFrom, One
 )
-import uuid
 from datetime import datetime
+from game.models.base import GameBaseModel
 
-class GamePlayer(StructuredNode):
+class GamePlayer(GameBaseModel):
     """GamePlayer model representing a player in a specific game"""
-    player_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     is_ai = BooleanProperty(default=False)
     ai_difficulty = StringProperty(choices={
         'easy': 'Easy',

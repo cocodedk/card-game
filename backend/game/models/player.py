@@ -1,18 +1,14 @@
 from neomodel import (
-    StructuredNode, StringProperty, IntegerProperty,
-    DateTimeProperty, RelationshipTo
+    StringProperty,
+    RelationshipTo
 )
-from datetime import datetime
-import uuid
+from game.models.base import GameBaseModel
 
-class Player(StructuredNode):
+class Player(GameBaseModel):
     """Player model representing a user in the game context"""
-    player_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
-    user_id = IntegerProperty(unique_index=True)
     username = StringProperty(unique_index=True)
     display_name = StringProperty(default="")
     avatar = StringProperty(default="default_avatar.png")
-    created_at = DateTimeProperty(default=datetime.now)
     date_of_birth = StringProperty(default="")
     callsign = StringProperty(default="")
 

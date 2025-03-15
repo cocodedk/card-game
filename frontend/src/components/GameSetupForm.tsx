@@ -68,18 +68,31 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({ settings, onChange }) => 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="timeLimit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Time Limit (minutes, 0 for no limit)
+            Time Limit (minutes, 5-120, or 0 for no limit)
           </label>
           <input
             type="number"
             id="timeLimit"
             name="timeLimit"
             min="0"
-            max="60"
+            max="120"
             value={settings.timeLimit}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = parseInt(e.target.value, 10);
+              // Allow 0 (no limit) or values between 5 and 120
+              if (value === 0 || (value >= 5 && value <= 120)) {
+                onChange({ timeLimit: value });
+              } else if (value < 5 && value !== 0) {
+                onChange({ timeLimit: 5 });
+              } else if (value > 120) {
+                onChange({ timeLimit: 120 });
+              }
+            }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
           />
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Set to 0 for no time limit, or between 5-120 minutes.
+          </p>
         </div>
 
         <div className="flex items-center h-full pt-6">

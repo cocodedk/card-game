@@ -13,11 +13,11 @@ class Neo4jJWTAuthentication(JWTAuthentication):
         Attempt to find and return a user using the given validated token.
         """
         try:
-            user_id = validated_token['user_id']
+            user_uid = validated_token['user_uid']
 
             # Get the UserProfile from Neo4j
             try:
-                profile = UserProfile.nodes.get(user_id=user_id)
+                profile = UserProfile.nodes.get(uid=user_uid)
                 return profile
             except UserProfile.DoesNotExist:
                 return None
@@ -31,7 +31,7 @@ def get_tokens_for_user(profile):
     """
     # Create a token payload
     token_payload = {
-        'user_id': profile.user_id,
+        'user_uid': profile.uid,
         'username': profile.username,
         'email': profile.email,
     }

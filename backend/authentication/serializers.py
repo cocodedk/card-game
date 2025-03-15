@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import UserProfile
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True, source='user_id')
+    uid = serializers.CharField(read_only=True)
     username = serializers.CharField(read_only=True)
     email = serializers.CharField(read_only=True)
     first_name = serializers.CharField(read_only=True)
@@ -10,7 +10,6 @@ class UserSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.Serializer):
     uid = serializers.CharField(read_only=True)
-    user_id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(read_only=True)
     email = serializers.CharField(read_only=True)
     first_name = serializers.CharField()
@@ -24,6 +23,7 @@ class UserProfileSerializer(serializers.Serializer):
         return instance
 
 class RegisterSerializer(serializers.Serializer):
+    uid = serializers.CharField(read_only=True)
     username = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
@@ -55,17 +55,8 @@ class RegisterSerializer(serializers.Serializer):
         validated_data.pop('confirm_password')
         password = validated_data.pop('password')
 
-        # Generate a unique user_id
-        # Get the highest user_id or start with 1
-        try:
-            highest_user = UserProfile.nodes.order_by('-user_id').first()
-            next_id = highest_user.user_id + 1 if highest_user else 1
-        except Exception:
-            next_id = 1
-
         # Create UserProfile with hashed password
         profile = UserProfile(
-            user_id=next_id,
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data.get('first_name', ''),

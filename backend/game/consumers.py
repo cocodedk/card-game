@@ -10,12 +10,12 @@ from .models import Game, Player, GamePlayer, PlayerGroup
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
-        self.game_id = self.scope['url_route']['kwargs'].get('game_id')
-        self.group_id = self.scope['url_route']['kwargs'].get('group_id')
+        self.game_uid = self.scope['url_route']['kwargs'].get('game_uid')
+        self.group_uid = self.scope['url_route']['kwargs'].get('group_uid')
         self.groups = []  # Track all groups this connection belongs to
 
         # Always connect to the user's personal channel
-        self.user_group_name = f'user_{self.user.id}'
+        self.user_group_name = f'user_{self.user.uid}'
         await self.channel_layer.group_add(
             self.user_group_name,
             self.channel_name
@@ -23,8 +23,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.groups.append(self.user_group_name)
 
         # If connecting to a specific game, join that game's group too
-        if self.game_id:
-            self.game_group_name = f'game_{self.game_id}'
+        if self.game_uid:
+            self.game_group_name = f'game_{self.game_uid}'
             await self.channel_layer.group_add(
                 self.game_group_name,
                 self.channel_name
@@ -32,15 +32,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.groups.append(self.game_group_name)
 
             # Send initial game state
-            game_data = await self.get_game_data(self.game_id)
+            game_data = await self.get_game_data(self.game_uid)
             if game_data:
                 await self.send(text_data=json.dumps({
                     'type': 'game_state',
                     'data': game_data
                 }))
         # If connecting to a specific player group, join that group's channel
-        elif self.group_id:
-            self.player_group_name = f'player_group_{self.group_id}'
+        elif self.group_uid:
+            self.player_group_name = f'player_group_{self.group_uid}'
             await self.channel_layer.group_add(
                 self.player_group_name,
                 self.channel_name
@@ -48,7 +48,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.groups.append(self.player_group_name)
 
             # Send initial group state
-            group_data = await self.get_player_group_data(self.group_id)
+            group_data = await self.get_player_group_data(self.group_uid)
             if group_data:
                 await self.send(text_data=json.dumps({
                     'type': 'player_group_state',
@@ -89,9 +89,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
         elif message_type == 'subscribe_game':
             # Allow dynamic subscription to additional games
-            game_id = text_data_json.get('game_id')
-            if game_id and f'game_{game_id}' not in self.groups:
-                game_group_name = f'game_{game_id}'
+            game_uid = text_data_json.get('game_uid')
+            if game_uid and f'game_{game_uid}' not in self.groups:
+                game_group_name = f'game_{game_uid}'
                 await self.channel_layer.group_add(
                     game_group_name,
                     self.channel_name
@@ -99,7 +99,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.groups.append(game_group_name)
 
                 # Send initial game state for the newly subscribed game
-                game_data = await self.get_game_data(game_id)
+                game_data = await self.get_game_data(game_uid)
                 if game_data:
                     await self.send(text_data=json.dumps({
                         'type': 'game_state',
@@ -107,8 +107,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     }))
         elif message_type == 'unsubscribe_game':
             # Allow unsubscribing from games to reduce connection load
-            game_id = text_data_json.get('game_id')
-            game_group_name = f'game_{game_id}'
+            game_uid = text_data_json.get('game_uid')
+            game_group_name = f'game_{game_uid}'
             if game_group_name in self.groups:
                 await self.channel_layer.group_discard(
                     game_group_name,
@@ -117,9 +117,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.groups.remove(game_group_name)
         elif message_type == 'subscribe_player_group':
             # Allow dynamic subscription to player groups
-            group_id = text_data_json.get('group_id')
-            if group_id and f'player_group_{group_id}' not in self.groups:
-                player_group_name = f'player_group_{group_id}'
+            group_uid = text_data_json.get('group_uid')
+            if group_uid and f'player_group_{group_uid}' not in self.groups:
+                player_group_name = f'player_group_{group_uid}'
                 await self.channel_layer.group_add(
                     player_group_name,
                     self.channel_name
@@ -127,7 +127,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.groups.append(player_group_name)
 
                 # Send initial group state
-                group_data = await self.get_player_group_data(group_id)
+                group_data = await self.get_player_group_data(group_uid)
                 if group_data:
                     await self.send(text_data=json.dumps({
                         'type': 'player_group_state',
@@ -135,8 +135,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     }))
         elif message_type == 'unsubscribe_player_group':
             # Allow unsubscribing from player groups
-            group_id = text_data_json.get('group_id')
-            player_group_name = f'player_group_{group_id}'
+            group_uid = text_data_json.get('group_uid')
+            player_group_name = f'player_group_{group_uid}'
             if player_group_name in self.groups:
                 await self.channel_layer.group_discard(
                     player_group_name,
@@ -256,12 +256,12 @@ class GameConsumer(AsyncWebsocketConsumer):
     def get_user_active_games(self):
         """Get all active games for the current user"""
         try:
-            player = Player.nodes.get(user_id=self.user.id)
+            player = Player.nodes.get(uid=self.user.uid)
             games = player.games.filter(status__in=['waiting', 'in_progress'])
 
             return [
                 {
-                    "game_id": game.game_id,
+                    "game_uid": game.game_uid,
                     "status": game.status,
                     "game_type": game.game_type
                 }
@@ -275,12 +275,12 @@ class GameConsumer(AsyncWebsocketConsumer):
     def get_user_groups(self):
         """Get all groups the user is a member of"""
         try:
-            player = Player.nodes.get(user_id=self.user.id)
+            player = Player.nodes.get(uid=self.user.uid)
             groups = player.member_of_groups.all()
 
             return [
                 {
-                    "group_id": group.group_id,
+                    "group_uid": group.group_uid,
                     "name": group.name,
                     "is_owner": group.owner.is_connected(player),
                     "member_count": len(list(group.members.all()))
@@ -292,11 +292,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             return []
 
     @database_sync_to_async
-    def get_player_group_data(self, group_id):
+    def get_player_group_data(self, group_uid):
         """Get detailed data for a player group"""
         try:
-            group = PlayerGroup.nodes.get(group_id=group_id)
-            player = Player.nodes.get(user_id=self.user.id)
+            group = PlayerGroup.nodes.get(uid=group_uid)
+            player = Player.nodes.get(uid=self.user.uid)
 
             # Check if user is a member
             if not group.members.is_connected(player):
@@ -306,7 +306,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             members = []
             for member in group.members.all():
                 members.append({
-                    "user_id": member.user_id,
+                    "user_uid": member.uid,
                     "username": member.username,
                     "display_name": member.display_name,
                     "is_owner": group.owner.is_connected(member)
@@ -316,13 +316,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             active_games = []
             for game in group.games.filter(status__in=['waiting', 'in_progress']):
                 active_games.append({
-                    "game_id": game.game_id,
+                    "game_uid": game.game_uid,
                     "game_type": game.game_type,
                     "status": game.status
                 })
 
             return {
-                "group_id": group.group_id,
+                "group_uid": group.uid,
                 "name": group.name,
                 "description": group.description,
                 "is_public": group.is_public,
@@ -336,9 +336,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             return None
 
     @database_sync_to_async
-    def get_game_data(self, game_id):
+    def get_game_data(self, game_uid):
         try:
-            game = Game.nodes.get(game_id=game_id)
+            game = Game.nodes.get(game_uid=game_uid)
 
             # Format the response
             players = []
@@ -347,14 +347,14 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game_player = None
                 for gp in p.game_players.all():
                     try:
-                        if gp.game.get().game_id == game.game_id:
+                        if gp.game.get().game_uid == game.game_uid:
                             game_player = gp
                             break
                     except:
                         continue
 
                 player_data = {
-                    "user_id": p.user_id,
+                    "user_uid": p.user_uid,
                     "username": p.username,
                     "display_name": p.display_name,
                     "status": game_player.status if game_player else "unknown"
@@ -373,26 +373,26 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             current_player = None
             if game.current_player.all():
-                current_player = game.current_player.get().user_id
+                current_player = game.current_player.get().user_uid
 
             winner = None
             if game.winner.all():
-                winner = game.winner.get().user_id
+                winner = game.winner.get().user_uid
 
             creator = None
             if game.creator.all():
-                creator = game.creator.get().user_id
+                creator = game.creator.get().user_uid
 
             # Get invited groups
             invited_groups = []
             for group in game.invited_groups.all():
                 invited_groups.append({
-                    "group_id": group.group_id,
+                    "group_uid": group.uid,
                     "name": group.name
                 })
 
             game_data = {
-                "game_id": game.game_id,
+                "game_uid": game.uid,
                 "game_type": game.game_type,
                 "max_players": game.max_players,
                 "time_limit": game.time_limit,
@@ -422,8 +422,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     # Use lazy imports for Django models when needed
     @database_sync_to_async
-    def get_user(self, user_id):
+    def get_user(self, uid):
         try:
-            return User.objects.get(id=user_id)
+            return User.objects.get(uid=uid)
         except User.DoesNotExist:
             return None

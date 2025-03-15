@@ -27,8 +27,8 @@ class Neo4jBackend(BaseBackend):
 
         return None
 
-    def get_user(self, user_id):
+    def get_user(self, user_uid):
         try:
-            return UserProfile.nodes.get(user_id=user_id)
+            return UserProfile.nodes.get(uid=user_uid)
         except UserProfile.DoesNotExist:
             return None

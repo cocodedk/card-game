@@ -130,8 +130,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
-    'USER_ID_FIELD': 'user_id',  # Use user_id instead of id
-    'USER_ID_CLAIM': 'user_id',  # Use user_id in the token claims
+    'USER_ID_FIELD': 'uid',  # Use uid instead of id
+    'USER_ID_CLAIM': 'uid',  # Use uid in the token claims
 }
 
 # CORS settings

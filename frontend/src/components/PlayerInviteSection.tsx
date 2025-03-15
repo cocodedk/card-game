@@ -39,7 +39,7 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
     try {
       const accessToken = getAccessToken();
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/players/search/?query=${encodeURIComponent(searchTerm)}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/games/search/players/?query=${encodeURIComponent(searchTerm)}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -49,10 +49,16 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
 
       // Filter out already invited players
       const filteredResults = response.data.filter(
-        (player: { id: string }) => !invitedPlayers.some((invited) => invited.id === player.id)
+        (player: { user_uid: string }) => !invitedPlayers.some((invited) => invited.id === player.user_uid)
       );
 
-      setSearchResults(filteredResults);
+      // Map the response to match our expected format
+      const mappedResults = filteredResults.map((player: { user_uid: string; username: string; display_name: string }) => ({
+        id: player.user_uid,
+        username: player.display_name || player.username
+      }));
+
+      setSearchResults(mappedResults);
       setLoading(false);
     } catch (error) {
       console.error("Error searching players:", error);

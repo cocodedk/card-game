@@ -1,12 +1,11 @@
 from neomodel import (
-    StructuredNode, StringProperty, IntegerProperty,
+    StringProperty, IntegerProperty,
     JSONProperty, RelationshipFrom, RelationshipTo, One
 )
-import uuid
+from game.models.base import GameBaseModel
 
-class GameCard(StructuredNode):
+class GameCard(GameBaseModel):
     """GameCard model representing a card instance in a game"""
-    instance_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     location = StringProperty(choices={
         'deck': 'In deck',
         'hand': 'In hand',

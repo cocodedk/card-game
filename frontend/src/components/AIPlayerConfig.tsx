@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { getAccessToken } from "../utils/auth";
 
 interface AIPlayer {
   id: string;
@@ -7,30 +9,77 @@ interface AIPlayer {
 
 interface AIPlayerConfigProps {
   maxAIPlayers: number;
+  gameId: string;
 }
 
-const AIPlayerConfig: React.FC<AIPlayerConfigProps> = ({ maxAIPlayers }) => {
+const AIPlayerConfig: React.FC<AIPlayerConfigProps> = ({ maxAIPlayers, gameId }) => {
   const [aiPlayers, setAIPlayers] = useState<AIPlayer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleAddAI = () => {
+  const handleAddAI = async () => {
     if (aiPlayers.length >= maxAIPlayers) {
       return;
     }
 
-    setAIPlayers([
-      ...aiPlayers,
-      {
-        id: `ai-${Date.now()}`,
-        difficulty: "medium",
-      },
-    ]);
+    setLoading(true);
+    setError("");
+
+    try {
+      const difficulty = "medium"; // Default difficulty
+      const accessToken = getAccessToken();
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/games/${gameId}/add_ai/`,
+        {
+          difficulty: difficulty
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // Generate a unique ID for the AI player since the backend doesn't return one
+      const aiPlayerId = `ai-${Date.now()}`;
+
+      // Add the new AI player to the list
+      setAIPlayers([
+        ...aiPlayers,
+        {
+          id: aiPlayerId,
+          difficulty: response.data.difficulty || difficulty,
+        },
+      ]);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error adding AI player:", error);
+
+      // Extract the specific error message from the response if available
+      let errorMessage = "Failed to add AI player. Please try again.";
+      if (axios.isAxiosError(error) && error.response) {
+        // Check if the error response has a specific error message
+        if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      }
+
+      setError(errorMessage);
+      setLoading(false);
+    }
   };
 
   const handleRemoveAI = (id: string) => {
+    // In a real implementation, we would call an API to remove the AI player
+    // For now, we'll just update the local state
     setAIPlayers(aiPlayers.filter((player) => player.id !== id));
   };
 
   const handleChangeDifficulty = (id: string, difficulty: string) => {
+    // In a real implementation, we would call an API to update the AI player's difficulty
+    // For now, we'll just update the local state
     setAIPlayers(
       aiPlayers.map((player) => (player.id === id ? { ...player, difficulty } : player))
     );
@@ -38,6 +87,12 @@ const AIPlayerConfig: React.FC<AIPlayerConfigProps> = ({ maxAIPlayers }) => {
 
   return (
     <div className="space-y-4">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
       {maxAIPlayers <= 0 ? (
         <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md">
           <p className="text-yellow-800 dark:text-yellow-200 text-sm">
@@ -52,10 +107,10 @@ const AIPlayerConfig: React.FC<AIPlayerConfigProps> = ({ maxAIPlayers }) => {
             </p>
             <button
               onClick={handleAddAI}
-              disabled={aiPlayers.length >= maxAIPlayers}
+              disabled={loading || aiPlayers.length >= maxAIPlayers}
               className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50 text-sm"
             >
-              Add AI Player
+              {loading ? "Adding..." : "Add AI Player"}
             </button>
           </div>
 

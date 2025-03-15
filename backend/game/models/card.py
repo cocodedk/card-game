@@ -2,11 +2,10 @@ from neomodel import (
     StructuredNode, StringProperty, IntegerProperty,
     JSONProperty, RelationshipFrom
 )
-import uuid
+from game.models.base import GameBaseModel
 
-class Card(StructuredNode):
+class Card(GameBaseModel):
     """Card model representing a game card"""
-    card_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     name = StringProperty(index=True)
     card_type = StringProperty(index=True)
     rarity = StringProperty(index=True)

@@ -3,12 +3,10 @@ from neomodel import (
     DateTimeProperty, BooleanProperty, JSONProperty,
     RelationshipFrom, RelationshipTo, One, ZeroOrOne
 )
-import uuid
-from datetime import datetime
+from game.models.base import GameBaseModel
 
-class Game(StructuredNode):
+class Game(GameBaseModel):
     """Game model representing a game session"""
-    game_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     game_type = StringProperty(choices={
         'standard': 'Standard Game',
         'quick': 'Quick Game',
@@ -25,7 +23,6 @@ class Game(StructuredNode):
         'cancelled': 'Cancelled'
     }, default='created')
     current_turn = IntegerProperty(default=0)
-    created_at = DateTimeProperty(default=datetime.now)
     started_at = DateTimeProperty()
     ended_at = DateTimeProperty()
     completed_at = DateTimeProperty()

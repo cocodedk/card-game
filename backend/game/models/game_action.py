@@ -1,15 +1,12 @@
 from neomodel import (
-    StructuredNode, StringProperty, DateTimeProperty,
+    StringProperty,
     JSONProperty, RelationshipTo, One, ZeroOrOne
 )
-import uuid
-from datetime import datetime
+from game.models.base import GameBaseModel
 
-class GameAction(StructuredNode):
+class GameAction(GameBaseModel):
     """GameAction model for tracking game history"""
-    action_id = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     action_type = StringProperty(index=True)
-    timestamp = DateTimeProperty(default=datetime.now)
     action_data = JSONProperty()
 
     # Relationships

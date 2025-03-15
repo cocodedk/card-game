@@ -8,13 +8,12 @@ class PlayerGroupService:
     """Service for managing player groups"""
 
     @staticmethod
-    def create_group(owner_id, name, description="", is_public=False):
+    def create_group(owner_uid, name, description="", is_public=False):
         """Create a new player group"""
-        owner = Player.nodes.get(user_id=owner_id)
+        owner = Player.nodes.get(uid=owner_uid)
 
         # Create the group
         group = PlayerGroup(
-            group_id=str(uuid.uuid4()),
             name=name,
             description=description,
             is_public=is_public,
@@ -31,11 +30,11 @@ class PlayerGroupService:
         return group
 
     @staticmethod
-    def invite_to_group(group_id, inviter_id, invitee_id):
+    def invite_to_group(group_uid, inviter_uid, invitee_uid):
         """Invite a player to join a group"""
-        group = PlayerGroup.nodes.get(group_id=group_id)
-        inviter = Player.nodes.get(user_id=inviter_id)
-        invitee = Player.nodes.get(user_id=invitee_id)
+        group = PlayerGroup.nodes.get(uid=group_uid)
+        inviter = Player.nodes.get(uid=inviter_uid)
+        invitee = Player.nodes.get(uid=invitee_uid)
 
         # Check if inviter is owner or member
         if not (group.owner.is_connected(inviter) or group.members.is_connected(inviter)):
@@ -51,13 +50,12 @@ class PlayerGroupService:
         )
 
         for inv in existing_invitations:
-            if (inv.group.get().group_id == group_id and
-                inv.invitee.get().user_id == invitee_id):
+            if (inv.group.get().uid == group_uid and
+                inv.invitee.get().uid == invitee_uid):
                 raise ValueError("Player already has a pending invitation to this group")
 
         # Create the invitation
         invitation = PlayerGroupInvitation(
-            invitation_id=str(uuid.uuid4()),
             created_at=datetime.now(),
             status='pending'
         ).save()
@@ -73,9 +71,9 @@ class PlayerGroupService:
         return invitation
 
     @staticmethod
-    def respond_to_group_invitation(invitation_id, response):
+    def respond_to_group_invitation(invitation_uid, response):
         """Accept or decline a group invitation"""
-        invitation = PlayerGroupInvitation.nodes.get(invitation_id=invitation_id)
+        invitation = PlayerGroupInvitation.nodes.get(uid=invitation_uid)
 
         if invitation.status != 'pending':
             raise ValueError("Invitation has already been processed")
@@ -101,23 +99,23 @@ class PlayerGroupService:
         return invitation
 
     @staticmethod
-    def get_player_groups(player_id):
+    def get_player_groups(player_uid):
         """Get all groups a player is a member of"""
-        player = Player.nodes.get(user_id=player_id)
+        player = Player.nodes.get(uid=player_uid)
         return list(player.member_of_groups.all())
 
     @staticmethod
-    def get_group_members(group_id):
+    def get_group_members(group_uid):
         """Get all members of a group"""
-        group = PlayerGroup.nodes.get(group_id=group_id)
+        group = PlayerGroup.nodes.get(uid=group_uid)
         return list(group.members.all())
 
     @staticmethod
-    def remove_from_group(group_id, owner_id, player_id):
+    def remove_from_group(group_uid, owner_uid, player_uid):
         """Remove a player from a group"""
-        group = PlayerGroup.nodes.get(group_id=group_id)
-        owner = Player.nodes.get(user_id=owner_id)
-        player = Player.nodes.get(user_id=player_id)
+        group = PlayerGroup.nodes.get(uid=group_uid)
+        owner = Player.nodes.get(uid=owner_uid)
+        player = Player.nodes.get(uid=player_uid)
 
         # Check if remover is owner
         if not group.owner.is_connected(owner):
@@ -141,10 +139,10 @@ class PlayerGroupService:
         return group
 
     @staticmethod
-    def leave_group(group_id, player_id):
+    def leave_group(group_uid, player_uid):
         """Leave a group"""
-        group = PlayerGroup.nodes.get(group_id=group_id)
-        player = Player.nodes.get(user_id=player_id)
+        group = PlayerGroup.nodes.get(uid=group_uid)
+        player = Player.nodes.get(uid=player_uid)
 
         # Check if player is a member
         if not group.members.is_connected(player):
@@ -164,10 +162,10 @@ class PlayerGroupService:
         return group
 
     @staticmethod
-    def delete_group(group_id, owner_id):
+    def delete_group(group_uid, owner_uid):
         """Delete a group"""
-        group = PlayerGroup.nodes.get(group_id=group_id)
-        owner = Player.nodes.get(user_id=owner_id)
+        group = PlayerGroup.nodes.get(uid=group_uid)
+        owner = Player.nodes.get(uid=owner_uid)
 
         # Check if user is owner
         if not group.owner.is_connected(owner):
@@ -182,16 +180,16 @@ class PlayerGroupService:
 
         # Send notifications to all members
         for member in members:
-            PlayerGroupService.send_group_deleted_notification(group_id, member)
+            PlayerGroupService.send_group_deleted_notification(group_uid, member)
 
         return True
 
     @staticmethod
-    def invite_group_to_game(game_id, group_id, inviter_id):
+    def invite_group_to_game(game_uid, group_uid, inviter_uid):
         """Invite an entire group to a game"""
-        game = Game.nodes.get(game_id=game_id)
-        group = PlayerGroup.nodes.get(group_id=group_id)
-        inviter = Player.nodes.get(user_id=inviter_id)
+        game = Game.nodes.get(uid=game_uid)
+        group = PlayerGroup.nodes.get(uid=group_uid)
+        inviter = Player.nodes.get(uid=inviter_uid)
 
         # Check if inviter is the game creator
         if not game.creator.is_connected(inviter):
@@ -211,7 +209,7 @@ class PlayerGroupService:
         invited_players = []
         for member in members:
             # Skip the inviter if they're in the group
-            if member.user_id == inviter_id:
+            if member.uid == inviter_uid:
                 continue
 
             # Skip players already in the game
@@ -221,9 +219,9 @@ class PlayerGroupService:
             try:
                 # Use the existing invite_player method
                 game_player = GameService.invite_player(
-                    game_id=game_id,
-                    player_id=member.user_id,
-                    inviter_id=inviter_id
+                    game_uid=game_uid,
+                    player_uid=member.uid,
+                    inviter_uid=inviter_uid
                 )
                 invited_players.append(member)
             except Exception as e:
@@ -243,17 +241,17 @@ class PlayerGroupService:
 
             # Prepare the notification data
             invitation_data = {
-                'invitation_id': invitation.invitation_id,
-                'group_id': group.group_id,
+                'invitation_uid': invitation.uid,
+                'group_uid': group.uid,
                 'group_name': group.name,
-                'inviter_id': inviter.user_id,
+                'inviter_uid': inviter.uid,
                 'inviter_username': inviter.username,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the invitee's personal channel
             async_to_sync(channel_layer.group_send)(
-                f'user_{invitee.user_id}',
+                f'user_{invitee.uid}',
                 {
                     'type': 'group_invitation',
                     'data': invitation_data
@@ -270,9 +268,9 @@ class PlayerGroupService:
 
             # Prepare the response data
             response_data = {
-                'group_id': group.group_id,
+                'group_uid': group.group_uid,
                 'group_name': group.name,
-                'user_id': player.user_id,
+                'user_uid': player.user_uid,
                 'username': player.username,
                 'response': response,
                 'timestamp': datetime.now().isoformat()
@@ -281,7 +279,7 @@ class PlayerGroupService:
             # Send to the group owner's personal channel
             owner = group.owner.get()
             async_to_sync(channel_layer.group_send)(
-                f'user_{owner.user_id}',
+                f'user_{owner.user_uid}',
                 {
                     'type': 'group_invitation_response',
                     'data': response_data
@@ -291,15 +289,15 @@ class PlayerGroupService:
             # If accepted, notify all group members
             if response == 'accepted':
                 for member in group.members.all():
-                    if member.user_id != player.user_id and member.user_id != owner.user_id:
+                    if member.user_uid != player.user_uid and member.user_uid != owner.user_uid:
                         async_to_sync(channel_layer.group_send)(
-                            f'user_{member.user_id}',
+                            f'user_{member.user_uid}',
                             {
                                 'type': 'group_member_joined',
                                 'data': {
-                                    'group_id': group.group_id,
+                                    'group_uid': group.group_uid,
                                     'group_name': group.name,
-                                    'user_id': player.user_id,
+                                    'user_uid': player.user_uid,
                                     'username': player.username,
                                     'timestamp': datetime.now().isoformat()
                                 }
@@ -316,16 +314,16 @@ class PlayerGroupService:
 
             # Prepare the notification data
             notification_data = {
-                'group_id': group.group_id,
+                'group_uid': group.group_uid,
                 'group_name': group.name,
-                'user_id': player.user_id,
+                'user_uid': player.user_uid,
                 'username': player.username,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the removed player
             async_to_sync(channel_layer.group_send)(
-                f'user_{player.user_id}',
+                f'user_{player.user_uid}',
                 {
                     'type': 'group_removed_from',
                     'data': notification_data
@@ -334,9 +332,9 @@ class PlayerGroupService:
 
             # Notify all remaining group members
             for member in group.members.all():
-                if member.user_id != player.user_id:
+                if member.user_uid != player.user_uid:
                     async_to_sync(channel_layer.group_send)(
-                        f'user_{member.user_id}',
+                        f'user_{member.user_uid}',
                         {
                             'type': 'group_member_removed',
                             'data': notification_data
@@ -353,18 +351,18 @@ class PlayerGroupService:
 
             # Prepare the notification data
             notification_data = {
-                'group_id': group.group_id,
+                'group_uid': group.group_uid,
                 'group_name': group.name,
-                'user_id': player.user_id,
+                'user_uid': player.user_uid,
                 'username': player.username,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Notify all remaining group members
             for member in group.members.all():
-                if member.user_id != player.user_id:
+                if member.user_uid != player.user_uid:
                     async_to_sync(channel_layer.group_send)(
-                        f'user_{member.user_id}',
+                        f'user_{member.user_uid}',
                         {
                             'type': 'group_member_left',
                             'data': notification_data
@@ -374,20 +372,20 @@ class PlayerGroupService:
             print(f"Error sending group member left notification: {str(e)}")
 
     @staticmethod
-    def send_group_deleted_notification(group_id, player):
+    def send_group_deleted_notification(group_uid, player):
         """Send a notification that a group has been deleted"""
         try:
             channel_layer = get_channel_layer()
 
             # Prepare the notification data
             notification_data = {
-                'group_id': group_id,
+                'group_uid': group_uid,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the player
             async_to_sync(channel_layer.group_send)(
-                f'user_{player.user_id}',
+                f'user_{player.uid}',
                 {
                     'type': 'group_deleted',
                     'data': notification_data
@@ -404,11 +402,11 @@ class PlayerGroupService:
 
             # Prepare the notification data
             notification_data = {
-                'game_id': game.game_id,
+                'game_uid': game.uid,
                 'game_type': game.game_type,
-                'group_id': group.group_id,
+                'group_uid': group.uid,
                 'group_name': group.name,
-                'inviter_id': inviter.user_id,
+                'inviter_uid': inviter.uid,
                 'inviter_username': inviter.username,
                 'invited_count': len(invited_players),
                 'timestamp': datetime.now().isoformat()
@@ -417,11 +415,11 @@ class PlayerGroupService:
             # Send to all group members
             for member in group.members.all():
                 # Skip the inviter
-                if member.user_id == inviter.user_id:
+                if member.uid == inviter.uid:
                     continue
 
                 async_to_sync(channel_layer.group_send)(
-                    f'user_{member.user_id}',
+                    f'user_{member.uid}',
                     {
                         'type': 'group_game_invitation',
                         'data': notification_data
@@ -434,17 +432,16 @@ class GameService:
     """Service for handling game logic and operations"""
 
     @staticmethod
-    def create_game(creator_id, game_type="standard", max_players=2, time_limit=30, use_ai=False, rule_version="1.0"):
+    def create_game(creator_uid, game_type="standard", max_players=2, time_limit=30, use_ai=False, rule_version="1.0"):
         """Create a new game with the specified parameters"""
         # Get the creator player
-        creator = Player.nodes.get(user_id=creator_id)
+        creator = Player.nodes.get(uid=creator_uid)
 
         # Get the rule set
         rule_set = GameRuleSet.nodes.get(version=rule_version)
 
         # Create the game
         game = Game(
-            game_id=str(uuid.uuid4()),
             game_type=game_type,
             max_players=max_players,
             time_limit=time_limit,
@@ -463,7 +460,6 @@ class GameService:
 
         # Create a GamePlayer for the creator
         game_player = GamePlayer(
-            player_id=str(uuid.uuid4()),
             is_ai=False,
             status='accepted',
             joined_at=datetime.now()
@@ -480,11 +476,11 @@ class GameService:
         return game
 
     @staticmethod
-    def invite_player(game_id, player_id, inviter_id):
+    def invite_player(game_uid, player_uid, inviter_uid):
         """Invite a player to join a game"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
-        inviter = Player.nodes.get(user_id=inviter_id)
+        game = Game.nodes.get(uid=game_uid)
+        player = Player.nodes.get(uid=player_uid)
+        inviter = Player.nodes.get(uid=inviter_uid)
 
         # Check if game is in created or waiting status
         if game.status not in ['created', 'waiting']:
@@ -505,7 +501,6 @@ class GameService:
 
         # Create a GamePlayer for the invited player
         game_player = GamePlayer(
-            player_id=str(uuid.uuid4()),
             is_ai=False,
             status='invited',
             joined_at=datetime.now()
@@ -521,10 +516,10 @@ class GameService:
         return game_player
 
     @staticmethod
-    def add_ai_player(game_id, creator_id, difficulty="medium"):
+    def add_ai_player(game_uid, creator_uid, difficulty="medium"):
         """Add an AI player to a game"""
-        game = Game.nodes.get(game_id=game_id)
-        creator = Player.nodes.get(user_id=creator_id)
+        game = Game.nodes.get(uid=game_uid)
+        creator = Player.nodes.get(uid=creator_uid)
 
         # Check if game is in created or waiting status
         if game.status not in ['created', 'waiting']:
@@ -545,7 +540,6 @@ class GameService:
 
         # Create a GamePlayer for the AI player
         game_player = GamePlayer(
-            player_id=str(uuid.uuid4()),
             is_ai=True,
             ai_difficulty=difficulty,
             status='accepted',
@@ -564,17 +558,17 @@ class GameService:
         return game_player
 
     @staticmethod
-    def accept_invitation(game_id, player_id):
+    def accept_invitation(game_uid, player_uid):
         """Accept an invitation to join a game"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
+        game = Game.nodes.get(uid=game_uid)
+        player = Player.nodes.get(uid=player_uid)
 
         # Find the GamePlayer for this player and game
         game_players = player.game_players.all()
         game_player = None
 
         for gp in game_players:
-            if gp.game.get().game_id == game_id:
+            if gp.game.get().game_uid == game_uid:
                 game_player = gp
                 break
 
@@ -598,17 +592,17 @@ class GameService:
         return game_player
 
     @staticmethod
-    def decline_invitation(game_id, player_id):
+    def decline_invitation(game_uid, player_uid):
         """Decline an invitation to join a game"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
+        game = Game.nodes.get(game_uid=game_uid)
+        player = Player.nodes.get(user_uid=player_uid)
 
         # Find the GamePlayer for this player and game
         game_players = player.game_players.all()
         game_player = None
 
         for gp in game_players:
-            if gp.game.get().game_id == game_id:
+            if gp.game.get().game_uid == game_uid:
                 game_player = gp
                 break
 
@@ -628,22 +622,22 @@ class GameService:
         return game_player
 
     @staticmethod
-    def search_players(query, current_user_id):
+    def search_players(query, current_user_uid):
         """Search for players by username or display name"""
         # Exclude the current user from results
         results = Player.nodes.filter(
             username__icontains=query
         ).exclude(
-            user_id=current_user_id
+            user_uid=current_user_uid
         )
 
         return list(results)
 
     @staticmethod
-    def join_game(game_id, player_id):
+    def join_game(game_uid, player_uid):
         """Add a player to an existing game"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
+        game = Game.nodes.get(uid=game_uid)
+        player = Player.nodes.get(uid=player_uid)
 
         # Check if game is in waiting status
         if game.status != 'waiting':
@@ -654,7 +648,6 @@ class GameService:
 
         # Create a GamePlayer for the player
         game_player = GamePlayer(
-            player_id=str(uuid.uuid4()),
             is_ai=False,
             status='accepted',
             joined_at=datetime.now()
@@ -670,9 +663,9 @@ class GameService:
         return game
 
     @staticmethod
-    def start_game(game_id):
+    def start_game(game_uid):
         """Start a game that is in waiting status"""
-        game = Game.nodes.get(game_id=game_id)
+        game = Game.nodes.get(uid=game_uid)
 
         # Check if game is in waiting status
         if game.status != 'waiting':
@@ -707,19 +700,19 @@ class GameService:
         return game
 
     @staticmethod
-    def play_card(game_id, player_id, card_instance_id, target_position):
+    def play_card(game_uid, player_uid, card_instance_uid, target_position):
         """Play a card from a player's hand to the field"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
-        card_instance = GameCard.nodes.get(instance_id=card_instance_id)
+        game = Game.nodes.get(uid=game_uid)
+        player = Player.nodes.get(uid=player_uid)
+        card_instance = GameCard.nodes.get(uid=card_instance_uid)
 
         # Check if it's the player's turn
         current_player = game.current_player.get()
-        if current_player.user_id != player_id:
+        if current_player.uid != player_uid:
             raise ValueError("It's not your turn")
 
         # Check if the card is in the player's hand
-        if card_instance.location != 'hand' or card_instance.owner.get().user_id != player_id:
+        if card_instance.location != 'hand' or card_instance.owner.get().uid != player_uid:
             raise ValueError("Card is not in your hand")
 
         # Move the card to the field
@@ -731,7 +724,7 @@ class GameService:
         GameAction(
             action_type='play_card',
             action_data={
-                'card_id': card_instance.card.get().card_id,
+                'card_uid': card_instance.uid,
                 'position': target_position
             }
         ).save().game.connect(game).player.connect(player).affected_cards.connect(card_instance)
@@ -739,21 +732,21 @@ class GameService:
         return card_instance
 
     @staticmethod
-    def end_turn(game_id, player_id):
+    def end_turn(game_uid, player_uid):
         """End the current player's turn and move to the next player"""
-        game = Game.nodes.get(game_id=game_id)
-        player = Player.nodes.get(user_id=player_id)
+        game = Game.nodes.get(uid=game_uid)
+        player = Player.nodes.get(uid=player_uid)
 
         # Check if it's the player's turn
         current_player = game.current_player.get()
-        if current_player.user_id != player_id:
+        if current_player.uid != player_uid:
             raise ValueError("It's not your turn")
 
         # Get all players
         players = list(game.players.all())
 
         # Find the index of the current player
-        current_index = next((i for i, p in enumerate(players) if p.user_id == player_id), None)
+        current_index = next((i for i, p in enumerate(players) if p.uid == player_uid), None)
 
         # Calculate the next player's index
         next_index = (current_index + 1) % len(players)
@@ -775,9 +768,9 @@ class GameService:
         return game
 
     @staticmethod
-    def end_game(game_id, winner_id=None):
+    def end_game(game_uid, winner_uid=None):
         """End a game and set the winner if provided"""
-        game = Game.nodes.get(game_id=game_id)
+        game = Game.nodes.get(uid=game_uid)
 
         # Update game status
         game.status = 'completed'
@@ -785,8 +778,8 @@ class GameService:
         game.save()
 
         # Set the winner if provided
-        if winner_id:
-            winner = Player.nodes.get(user_id=winner_id)
+        if winner_uid:
+            winner = Player.nodes.get(uid=winner_uid)
             game.winner.connect(winner)
 
         return game
@@ -800,18 +793,18 @@ class GameService:
 
             # Prepare the notification data
             invitation_data = {
-                'game_id': game.game_id,
+                'game_uid': game.game_uid,
                 'game_type': game.game_type,
                 'max_players': game.max_players,
                 'time_limit': game.time_limit,
-                'inviter_id': inviter.user_id,
+                'inviter_uid': inviter.uid,
                 'inviter_username': inviter.username,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the player's personal channel
             async_to_sync(channel_layer.group_send)(
-                f'user_{player.user_id}',
+                f'user_{player.uid}',
                 {
                     'type': 'game_invitation',
                     'data': invitation_data
@@ -820,7 +813,7 @@ class GameService:
 
             # Also send to the game channel to notify other players
             player_data = {
-                'user_id': player.user_id,
+                'user_uid': player.uid,
                 'username': player.username,
                 'display_name': player.display_name,
                 'status': 'invited',
@@ -828,7 +821,7 @@ class GameService:
             }
 
             async_to_sync(channel_layer.group_send)(
-                f'game_{game.game_id}',
+                f'game_{game.game_uid}',
                 {
                     'type': 'player_joined',
                     'data': player_data
@@ -845,17 +838,17 @@ class GameService:
 
             # Prepare the response data
             response_data = {
-                'user_id': player.user_id,
+                'user_uid': player.uid,
                 'username': player.username,
                 'display_name': player.display_name,
                 'response': response,
-                'game_id': game.game_id,
+                'game_uid': game.game_uid,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the game channel
             async_to_sync(channel_layer.group_send)(
-                f'game_{game.game_id}',
+                f'game_{game.game_uid}',
                 {
                     'type': 'invitation_response',
                     'data': response_data
@@ -870,7 +863,7 @@ class GameService:
             creator_data['is_creator_notification'] = True
 
             async_to_sync(channel_layer.group_send)(
-                f'user_{creator.user_id}',
+                f'user_{creator.uid}',
                 {
                     'type': 'invitation_response',
                     'data': creator_data
@@ -892,23 +885,23 @@ class GameService:
                     'is_ai': True,
                     'ai_difficulty': player.get('ai_difficulty', 'medium'),
                     'status': 'accepted',
-                    'game_id': game.game_id,
+                    'game_uid': game.game_uid,
                     'timestamp': datetime.now().isoformat()
                 }
             else:
                 # Human player
                 player_data = {
-                    'user_id': player.user_id,
+                    'user_uid': player.uid,
                     'username': player.username,
                     'display_name': player.display_name,
                     'status': 'accepted',
-                    'game_id': game.game_id,
+                    'game_uid': game.game_uid,
                     'timestamp': datetime.now().isoformat()
                 }
 
             # Send to the game channel
             async_to_sync(channel_layer.group_send)(
-                f'game_{game.game_id}',
+                f'game_{game.game_uid}',
                 {
                     'type': 'player_joined',
                     'data': player_data
@@ -918,16 +911,16 @@ class GameService:
             # Also update all players individually to ensure they receive the update
             # even if they're not actively listening to this game channel
             for p in game.players.all():
-                if not isinstance(player, dict) and p.user_id == player.user_id:
+                if not isinstance(player, dict) and p.uid == player.uid:
                     continue  # Skip sending to the player who just joined
 
                 async_to_sync(channel_layer.group_send)(
-                    f'user_{p.user_id}',
+                    f'user_{p.uid}',
                     {
                         'type': 'game_update',
                         'data': {
                             'update_type': 'player_joined',
-                            'game_id': game.game_id,
+                            'game_uid': game.game_uid,
                             'player': player_data
                         }
                     }
@@ -943,15 +936,15 @@ class GameService:
 
             # Prepare game started data
             game_data = {
-                'game_id': game.game_id,
+                'game_uid': game.game_uid,
                 'started_at': game.started_at.isoformat() if game.started_at else None,
-                'current_player': game.current_player.get().user_id if game.current_player.all() else None,
+                'current_player': game.current_player.get().uid if game.current_player.all() else None,
                 'timestamp': datetime.now().isoformat()
             }
 
             # Send to the game channel
             async_to_sync(channel_layer.group_send)(
-                f'game_{game.game_id}',
+                f'game_{game.game_uid}',
                 {
                     'type': 'game_started',
                     'data': game_data
@@ -964,11 +957,11 @@ class GameService:
                 player_data = game_data.copy()
                 player_data['is_your_turn'] = (
                     game.current_player.all() and
-                    game.current_player.get().user_id == player.user_id
+                    game.current_player.get().uid == player.uid
                 )
 
                 async_to_sync(channel_layer.group_send)(
-                    f'user_{player.user_id}',
+                    f'user_{player.uid}',
                     {
                         'type': 'game_started',
                         'data': player_data

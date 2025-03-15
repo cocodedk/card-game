@@ -1,17 +1,24 @@
-from django.contrib.auth.models import User
-from neomodel import StructuredNode, StringProperty, IntegerProperty, DateTimeProperty, UniqueIdProperty
+from neomodel import StructuredNode, StringProperty, DateTimeProperty
 from django.contrib.auth.hashers import make_password, check_password
+import uuid
+import logging
+from datetime import datetime
+logger = logging.getLogger(__name__)
 
 class UserProfile(StructuredNode):
     """Neo4j model for user profile, linked to Django User"""
-    uid = UniqueIdProperty()
-    user_id = IntegerProperty(unique_index=True)
+    uid = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     username = StringProperty(unique_index=True)
     email = StringProperty(index=True)
     first_name = StringProperty(default="")
     last_name = StringProperty(default="")
     password = StringProperty()  # Will store hashed password
     created_at = DateTimeProperty(default_now=True)
+    updated_at = DateTimeProperty(default_now=True)
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now()
+        super().save(*args, **kwargs)
 
     # Django authentication system compatibility properties
     @property

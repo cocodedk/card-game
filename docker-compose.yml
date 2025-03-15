@@ -1,10 +1,14 @@
+# No version field needed for newer Docker Compose
+
 services:
   backend:
     build:
       context: ./backend
       dockerfile: ../docker/backend.Dockerfile
     volumes:
-      - ./backend:/app
+      - ./frontend:/app/frontend
+      - ./backend:/app/backend
+      - ./.cursor/rules:/app/.cursor/rules
     ports:
       - "8000:8000"
     environment:
@@ -21,9 +25,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # Use watchmedo to automatically reload when files change
     command: >
-      sh -c "export DJANGO_SETTINGS_MODULE=card_game.settings && export PYTHONPATH=/app && chmod +x /app/configure_neo4j.py && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- /app/configure_neo4j.py daphne -b 0.0.0.0 -p 8000 card_game.asgi:application"
+      sh -c "export DJANGO_SETTINGS_MODULE=card_game.settings && export PYTHONPATH=/app && chmod +x /app/backend/configure_neo4j.py && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- /app/backend/configure_neo4j.py daphne -b 0.0.0.0 -p 8000 card_game.asgi:application"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
       interval: 30s
@@ -36,8 +39,11 @@ services:
       context: ./frontend
       dockerfile: ../docker/frontend.Dockerfile
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - shared_codebase:/shared_code
+      - ./frontend:/app/frontend
+      - ./backend:/app/backend
+      - ./.cursor/rules:/app/.cursor/rules
+      - /app/frontend/node_modules
     ports:
       - "3000:3000"
     environment:
@@ -81,6 +87,7 @@ services:
       start_period: 20s
 
 volumes:
+  shared_codebase:
   neo4j_data:
   neo4j_logs:
   redis_data:

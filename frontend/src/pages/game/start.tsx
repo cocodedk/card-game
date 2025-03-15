@@ -21,7 +21,7 @@ const GameStartPage: React.FC = () => {
   const [gameSettings, setGameSettings] = useState<GameSettings>({
     gameType: "standard",
     maxPlayers: 4,
-    timeLimit: 0, // 0 means no time limit
+    timeLimit: 45, // Default time limit of 45 minutes
     useAI: false,
   });
   const [invitedPlayers, setInvitedPlayers] = useState<Array<{ id: string; username: string; status: string }>>([]);
@@ -59,11 +59,22 @@ const GameStartPage: React.FC = () => {
         }
       );
 
-      setGameId(response.data.id);
+      console.log("Game creation response:", response.data);
+      setGameId(response.data.game_uid);
       setLoading(false);
     } catch (error) {
       console.error("Error creating game:", error);
-      setError("Failed to create game. Please try again.");
+
+      // Extract the specific error message from the response if available
+      let errorMessage = "Failed to create game. Please try again.";
+      if (axios.isAxiosError(error) && error.response) {
+        // Check if the error response has a specific error message
+        if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      }
+
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -79,27 +90,39 @@ const GameStartPage: React.FC = () => {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/games/${gameId}/invite/`,
         {
-          player_id: playerId,
+          player_uid: playerId,
         },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
-      );
+      ).then(response => {
+        console.log("Player invitation response:", response.data);
 
-      // Update invited players list
-      setInvitedPlayers((prev) => [
-        ...prev,
-        {
-          id: playerId,
-          username: "Player", // This would be replaced with actual username from API
-          status: "pending",
-        },
-      ]);
+        // Update invited players list with actual data from response
+        setInvitedPlayers((prev) => [
+          ...prev,
+          {
+            id: playerId,
+            username: response.data.username || "Player", // Use username from response if available
+            status: response.data.status || "pending",
+          },
+        ]);
+      });
     } catch (error) {
       console.error("Error inviting player:", error);
-      setError("Failed to invite player. Please try again.");
+
+      // Extract the specific error message from the response if available
+      let errorMessage = "Failed to invite player. Please try again.";
+      if (axios.isAxiosError(error) && error.response) {
+        // Check if the error response has a specific error message
+        if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      }
+
+      setError(errorMessage);
     }
   };
 
@@ -122,13 +145,25 @@ const GameStartPage: React.FC = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         }
-      );
+      ).then(response => {
+        console.log("Game start response:", response.data);
 
-      // Redirect to the game page
-      router.push(`/game/${gameId}`);
+        // Redirect to the game page
+        router.push(`/game/${gameId}`);
+      });
     } catch (error) {
       console.error("Error starting game:", error);
-      setError("Failed to start game. Please try again.");
+
+      // Extract the specific error message from the response if available
+      let errorMessage = "Failed to start game. Please try again.";
+      if (axios.isAxiosError(error) && error.response) {
+        // Check if the error response has a specific error message
+        if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      }
+
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -184,6 +219,7 @@ const GameStartPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">AI Players</h2>
                 <AIPlayerConfig
                   maxAIPlayers={gameSettings.maxPlayers - invitedPlayers.length - 1} // -1 for the current player
+                  gameId={gameId}
                 />
               </section>
             )}
