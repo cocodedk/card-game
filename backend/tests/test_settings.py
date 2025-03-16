@@ -38,9 +38,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.card_game.middleware.Neo4jConfigMiddleware',
 ]
 
-ROOT_URLCONF = 'card_game.urls'
+ROOT_URLCONF = 'backend.card_game.urls'
 
 TEMPLATES = [
     {
@@ -58,8 +59,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'card_game.wsgi.application'
-ASGI_APPLICATION = 'card_game.asgi.application'
+WSGI_APPLICATION = 'backend.card_game.wsgi.application'
+ASGI_APPLICATION = 'backend.card_game.asgi.application'
 
 # Database
 DATABASES = {

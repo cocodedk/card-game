@@ -11,7 +11,7 @@ from django.test.runner import DiscoverRunner
 sys.path.insert(0, '/app')
 
 # Set up Django environment
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "card_game.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.card_game.settings")
 django.setup()
 
 # Run tests

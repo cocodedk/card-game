@@ -1,10 +1,11 @@
 from django.test import TestCase
 from unittest.mock import patch
+from backend.tests.fixtures import MockNeo4jTestCase
 
 from backend.game.services.game_service_utils.create_idiot_rule_set import create_idiot_rule_set
 
 
-class SpecialCardTests(TestCase):
+class SpecialCardTests(MockNeo4jTestCase):
     """Tests for special card actions in the idiot rule set"""
 
     def test_nine_of_diamonds_special_action(self):

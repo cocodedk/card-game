@@ -4,7 +4,7 @@ from neomodel import config
 
 class CardGameConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'card_game'
+    name = 'backend.card_game'
 
     def ready(self):
         """

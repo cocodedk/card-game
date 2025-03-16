@@ -3,7 +3,12 @@ FROM python:3.12.3-bookworm
 WORKDIR /app/backend
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+    netcat-traditional \
+    iputils-ping \
+    curl \
+    build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=/app:/app/frontend \
     DJANGO_SETTINGS_MODULE=card_game.settings \

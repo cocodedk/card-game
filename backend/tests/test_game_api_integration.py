@@ -62,7 +62,7 @@ class GameAPIIntegrationTestCase(MockNeo4jTestCase):
         self.mock_get_object_or_404.side_effect = self.mock_get_object
 
         # Mock Game.create_game
-        self.create_game_patcher = patch('backend.game.models.Game.create_game')
+        self.create_game_patcher = patch('backend.game.services.game_service.GameService.create_game')
         self.mock_create_game = self.create_game_patcher.start()
 
         # Set up game and game state
@@ -104,8 +104,11 @@ class GameAPIIntegrationTestCase(MockNeo4jTestCase):
             {"suit": "diamonds", "rank": "2", "value": 2}
         ]
 
+        # Add state attribute to the game mock
+        self.game.state = MagicMock()
+
         # Link game state to game
-        self.game.state.get.return_value = self.game_state
+        self.game.state.all.return_value = [self.game_state]
 
         # Mock the create_game method
         self.mock_create_game.return_value = self.game

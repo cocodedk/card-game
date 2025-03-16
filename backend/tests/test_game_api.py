@@ -85,8 +85,11 @@ class GameAPITestCase(MockNeo4jTestCase):
             ]
         }
 
+        # Add state attribute to the game mock
+        self.game.state = MagicMock()
+
         # Link game state to game
-        self.game.state.get.return_value = self.game_state
+        self.game.state.all.return_value = [self.game_state]
 
     def tearDown(self):
         """Clean up after tests"""
@@ -106,7 +109,7 @@ class GameAPITestCase(MockNeo4jTestCase):
         from django.http import Http404
         raise Http404("Not found")
 
-    @patch('backend.game.api.views.Game.create_game')
+    @patch('backend.game.services.game_service.GameService.create_game')
     def test_create_game(self, mock_create_game):
         """Test creating a game"""
         # Mock the create_game method

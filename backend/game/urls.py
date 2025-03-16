@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import GameViewSet
-from game.views.game_views import (
+from .views.game_views import (
     create_game, play_card_view, list_rule_sets, create_rule_set
 )
 

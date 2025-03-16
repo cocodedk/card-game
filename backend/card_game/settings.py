@@ -43,10 +43,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'card_game.middleware.Neo4jConfigMiddleware',
+    'backend.card_game.middleware.Neo4jConfigMiddleware',
 ]
 
-ROOT_URLCONF = 'card_game.urls'
+ROOT_URLCONF = 'backend.card_game.urls'
 
 TEMPLATES = [
     {
@@ -64,8 +64,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'card_game.wsgi.application'
-ASGI_APPLICATION = 'card_game.asgi.application'
+WSGI_APPLICATION = 'backend.card_game.wsgi.application'
+ASGI_APPLICATION = 'backend.card_game.asgi.application'
 
 # We don't need a database for Django models
 # This is a minimal configuration to make Django happy

@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, '/app')
 
 # Set up Django environment
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "card_game.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.card_game.settings")
 
 # Run pytest
 if __name__ == "__main__":
