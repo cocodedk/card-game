@@ -106,7 +106,7 @@ CHANNEL_LAYERS = {
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'backend.authentication.jwt_auth.Neo4jJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -116,8 +116,8 @@ REST_FRAMEWORK = {
 # JWT Settings
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
+    'USER_ID_FIELD': 'uid',
+    'USER_ID_CLAIM': 'user_uid',
 }
 
 # Neo4j

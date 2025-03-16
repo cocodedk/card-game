@@ -209,7 +209,7 @@ class AnnounceOneCardView(GameActionView):
         game_state.player_states[player.uid]["announced_one_card"] = True
         game_state.save()
 
-        # Send notification
+        # Send notification to other players
         GameNotifications.notify_one_card_announced(
             game_id=game.uid,
             player_id=player.uid
@@ -218,7 +218,7 @@ class AnnounceOneCardView(GameActionView):
         return Response({
             "success": True,
             "message": "One card announced successfully"
-        })
+        }, status=status.HTTP_200_OK)
 
 
 class GetGameStateView(GameActionView):
@@ -272,7 +272,8 @@ class CreateGameView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # Create the game
-        game = Game.create_game(
+        from backend.game.services.game_service import GameService
+        game = GameService.create_game(
             creator_id=player.uid,
             rule_set_id=rule_set_id,
             name=request.data.get("name", "Idiot Card Game")
