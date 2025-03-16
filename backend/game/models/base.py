@@ -4,6 +4,7 @@ from datetime import datetime
 import uuid
 
 class GameBaseModel(StructuredNode):
+    __module__ = 'backend.game.models.base'
     uid = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     created_at = DateTimeProperty(default=datetime.now)
     updated_at = DateTimeProperty(default=datetime.now)

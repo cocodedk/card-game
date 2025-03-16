@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 class UserProfile(StructuredNode):
     """Neo4j model for user profile, linked to Django User"""
+    __module__ = 'backend.authentication.models'
     uid = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
     username = StringProperty(unique_index=True)
     email = StringProperty(index=True)

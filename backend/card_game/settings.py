@@ -84,7 +84,8 @@ NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
-    'authentication.backends.Neo4jBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'backend.authentication.backends.Neo4jBackend',
 ]
 
 # Channels configuration
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authentication.jwt_auth.Neo4jJWTAuthentication',
+        'backend.authentication.jwt_auth.Neo4jJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
