@@ -2,12 +2,14 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, UserProfileSerializer, RegisterSerializer, ChangePasswordSerializer
-from .models import UserProfile
+from .models import UserProfile, BlacklistedToken
 from backend.game.models import Player
 from .jwt_auth import get_tokens_for_user
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.exceptions import TokenError
+from datetime import datetime, timedelta
+import jwt
+from django.conf import settings
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
@@ -97,14 +99,34 @@ class LogoutView(APIView):
                 return Response({"error": "Refresh token is required"},
                                status=status.HTTP_400_BAD_REQUEST)
 
-            # Blacklist the refresh token
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            # Decode the token to get the user_uid and expiration
+            try:
+                # Note: This doesn't validate the token, just decodes it
+                decoded_token = jwt.decode(
+                    refresh_token,
+                    options={"verify_signature": False}
+                )
+                user_uid = decoded_token.get('user_uid')
+                exp = decoded_token.get('exp')
 
-            return Response({"message": "Logout successful"},
-                           status=status.HTTP_200_OK)
-        except TokenError:
-            return Response({"error": "Invalid token"},
+                # Create expiration datetime
+                expires_at = datetime.fromtimestamp(exp) if exp else datetime.now() + timedelta(days=7)
+
+                # Add the token to our Neo4j blacklist
+                BlacklistedToken(
+                    token=refresh_token,
+                    user_uid=user_uid,
+                    expires_at=expires_at
+                ).save()
+
+                return Response({"message": "Logout successful"},
+                               status=status.HTTP_200_OK)
+            except jwt.PyJWTError:
+                return Response({"error": "Invalid token format"},
+                               status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({"error": str(e)},
                            status=status.HTTP_400_BAD_REQUEST)
 
 class ChangePasswordView(APIView):

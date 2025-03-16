@@ -48,3 +48,33 @@ class UserProfile(StructuredNode):
 
     def __str__(self):
         return f"{self.username}'s profile"
+
+
+class BlacklistedToken(StructuredNode):
+    """Neo4j model for storing blacklisted JWT tokens"""
+    __module__ = 'backend.authentication.models'
+    uid = StringProperty(unique_index=True, default=lambda: str(uuid.uuid4()))
+    token = StringProperty(unique_index=True)  # The actual token string
+    user_uid = StringProperty(index=True)  # UID of the user who owned this token
+    blacklisted_at = DateTimeProperty(default_now=True)
+    expires_at = DateTimeProperty()  # When the token would have expired
+
+    @classmethod
+    def is_blacklisted(cls, token_string):
+        """Check if a token is blacklisted"""
+        try:
+            cls.nodes.get(token=token_string)
+            return True
+        except cls.DoesNotExist:
+            return False
+
+    @classmethod
+    def cleanup_expired(cls):
+        """Remove expired tokens from the blacklist"""
+        now = datetime.now()
+        # Find all expired tokens
+        expired_tokens = cls.nodes.filter(expires_at__lt=now)
+        # Delete them
+        for token in expired_tokens:
+            token.delete()
+        return len(expired_tokens)
