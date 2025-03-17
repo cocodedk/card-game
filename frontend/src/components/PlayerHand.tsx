@@ -88,12 +88,12 @@ const PlayerHand: React.FC<PlayerHandProps> = ({
     >
       {sortOrder === 'suit' ? (
         Object.entries(sortedCards).map(([suit, suitCards]) => (
-          <div key={suit} className="flex flex-row flex-wrap">
+          <div key={suit} className="flex flex-row flex-wrap" data-testid="card-container">
             {renderCards(suitCards)}
           </div>
         ))
       ) : (
-        <div className="flex flex-row flex-wrap">
+        <div className="flex flex-row flex-wrap" data-testid="card-container">
           {renderCards(sortedCards.all)}
         </div>
       )}
