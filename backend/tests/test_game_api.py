@@ -253,3 +253,44 @@ class GameAPITestCase(MockNeo4jTestCase):
         response_data = json.loads(response.content)
         self.assertTrue(response_data['success'])
         self.assertEqual(response_data['message'], "One card announced successfully")
+
+    @patch('backend.game.models.game_rule_set.GameRuleSet.nodes')
+    def test_list_rule_sets(self, mock_rule_sets):
+        """Test listing all rule sets"""
+        # Mock the rule sets
+        rule_set1 = MagicMock(spec=GameRuleSet)
+        rule_set1.uid = "ruleset1"
+        rule_set1.name = "Standard Rules"
+        rule_set1.description = "The standard ruleset"
+        rule_set1.version = "action_cards-12345678"
+
+        rule_set2 = MagicMock(spec=GameRuleSet)
+        rule_set2.uid = "ruleset2"
+        rule_set2.name = "Custom Rules"
+        rule_set2.description = "A custom ruleset"
+        rule_set2.version = "idiot_cards-87654321"
+
+        # Set up the mock to return our rule sets
+        mock_rule_sets.filter.return_value = [rule_set1, rule_set2]
+
+        # Use the new endpoint path
+        url = '/api/game-rules/'
+
+        # Make the request
+        response = self.client.get(
+            url,
+            HTTP_AUTHORIZATION='Bearer valid_token'
+        )
+
+        # Check the response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        self.assertIn('rule_sets', response_data)
+        self.assertEqual(len(response_data['rule_sets']), 2)
+
+        # Check the first rule set
+        first_rule = response_data['rule_sets'][0]
+        self.assertEqual(first_rule['id'], "ruleset1")
+        self.assertEqual(first_rule['name'], "Standard Rules")
+        self.assertEqual(first_rule['description'], "The standard ruleset")
+        self.assertEqual(first_rule['version'], "action_cards-12345678")

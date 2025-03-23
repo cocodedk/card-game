@@ -9,7 +9,7 @@ from backend.game.models.base import GameBaseModel
 class GameRuleSet(GameBaseModel):
     """GameRuleSet model for configurable game rules"""
     version = StringProperty(required=True, index=True)
-    name = StringProperty(default="Standard Rules")
+    name = StringProperty(default="Standard Rules", unique_index=True)
     description = StringProperty()
     active = BooleanProperty(default=True)
     created_at = DateTimeProperty(default=datetime.now)
@@ -17,6 +17,20 @@ class GameRuleSet(GameBaseModel):
 
     # Relationships
     games = RelationshipFrom('backend.game.models.game.Game', 'USES_RULES')
+
+    def save(self):
+        """Override save method to check name uniqueness"""
+        # Check if a rule set with this name already exists
+        if self.uid is None:  # Only check on new instances
+            existing = self.__class__.nodes.filter(name=self.name)
+            if existing and len(existing) > 0:
+                raise ValueError(f"A rule set with name '{self.name}' already exists")
+        else:
+            # check if another rule set with the same name and another uid exists
+            existing = self.__class__.nodes.filter(name=self.name, uid__ne=self.uid)
+            if existing and len(existing) > 0:
+                raise ValueError(f"A rule set with name '{self.name}' already exists")
+        return super().save()
 
     @classmethod
     def create_action_card_game(cls, name, description, card_actions, targeting_rules,
@@ -37,6 +51,11 @@ class GameRuleSet(GameBaseModel):
         Returns:
             GameRuleSet: The created rule set instance
         """
+        # Check if a rule set with this name already exists
+        existing = cls.nodes.filter(name=name)
+        if existing and len(existing) > 0:
+            raise ValueError(f"A rule set with name '{name}' already exists")
+
         version = f"action_cards-{uuid.uuid4().hex[:8]}"
 
         if deck_configuration is None:
@@ -91,6 +110,11 @@ class GameRuleSet(GameBaseModel):
         Returns:
             GameRuleSet: The created rule set instance
         """
+        # Check if a rule set with this name already exists
+        existing = cls.nodes.filter(name=name)
+        if existing and len(existing) > 0:
+            raise ValueError(f"A rule set with name '{name}' already exists")
+
         version = f"idiot_cards-{uuid.uuid4().hex[:8]}"
 
         if deck_configuration is None:

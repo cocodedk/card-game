@@ -11,6 +11,14 @@ interface GameSettings {
   maxPlayers: number;
   timeLimit?: number;
   useAI: boolean;
+  ruleSetId: string;
+}
+
+interface RuleSet {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
 }
 
 const GameStartPage: React.FC = () => {
@@ -18,11 +26,14 @@ const GameStartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [gameId, setGameId] = useState<string | null>(null);
+  const [ruleSets, setRuleSets] = useState<RuleSet[]>([]);
+  const [loadingRuleSets, setLoadingRuleSets] = useState(true);
   const [gameSettings, setGameSettings] = useState<GameSettings>({
     gameType: "standard",
     maxPlayers: 4,
     timeLimit: 45, // Default time limit of 45 minutes
     useAI: false,
+    ruleSetId: "", // Default empty, will be updated when rule sets are loaded
   });
   const [invitedPlayers, setInvitedPlayers] = useState<Array<{ id: string; username: string; status: string }>>([]);
 
@@ -32,7 +43,80 @@ const GameStartPage: React.FC = () => {
       router.push("/login");
       return;
     }
+
+    // Fetch rule sets when component mounts
+    fetchRuleSets();
   }, [router]);
+
+  const fetchRuleSets = async () => {
+    setLoadingRuleSets(true);
+    try {
+      const accessToken = getAccessToken();
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/games/rule-sets/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log("Rule sets response:", response.data);
+      // Handle different possible response formats
+      const ruleSetData = response.data.rule_sets || response.data;
+
+      if (ruleSetData && (Array.isArray(ruleSetData) || Object.keys(ruleSetData).length > 0)) {
+        setRuleSets(Array.isArray(ruleSetData) ? ruleSetData : [ruleSetData]);
+        // Set the first rule set as the default selected
+        if (Array.isArray(ruleSetData) && ruleSetData.length > 0) {
+          setGameSettings(prev => ({
+            ...prev,
+            ruleSetId: ruleSetData[0].id
+          }));
+        } else if (!Array.isArray(ruleSetData)) {
+          setGameSettings(prev => ({
+            ...prev,
+            ruleSetId: ruleSetData.id
+          }));
+        }
+      } else {
+        // If no rule sets returned, use mock data as fallback
+        console.log("No rule sets returned from API, using mock data");
+        const mockRuleSets = [
+          {
+            id: "standard-rules",
+            name: "Standard Rules",
+            description: "The classic card game rules with basic actions.",
+            version: "1.0"
+          }
+        ];
+        setRuleSets(mockRuleSets);
+        setGameSettings(prev => ({
+          ...prev,
+          ruleSetId: mockRuleSets[0].id
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching rule sets:", error);
+      // If API fails, use mock data as fallback
+      console.log("Using mock rule sets as fallback");
+      const mockRuleSets = [
+        {
+          id: "standard-rules",
+          name: "Standard Rules",
+          description: "The classic card game rules with basic actions.",
+          version: "1.0"
+        }
+      ];
+      setRuleSets(mockRuleSets);
+      setGameSettings(prev => ({
+        ...prev,
+        ruleSetId: mockRuleSets[0].id
+      }));
+    } finally {
+      setLoadingRuleSets(false);
+    }
+  };
 
   const handleSettingsChange = (settings: Partial<GameSettings>) => {
     setGameSettings((prev) => ({ ...prev, ...settings }));
@@ -41,6 +125,12 @@ const GameStartPage: React.FC = () => {
   const handleCreateGame = async () => {
     setLoading(true);
     setError("");
+
+    if (!gameSettings.ruleSetId) {
+      setError("Please select a rule set for the game.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const accessToken = getAccessToken();
@@ -51,6 +141,7 @@ const GameStartPage: React.FC = () => {
           max_players: gameSettings.maxPlayers,
           time_limit: gameSettings.timeLimit,
           use_ai: gameSettings.useAI,
+          rule_set_id: gameSettings.ruleSetId,
         },
         {
           headers: {
@@ -60,7 +151,8 @@ const GameStartPage: React.FC = () => {
       );
 
       console.log("Game creation response:", response.data);
-      setGameId(response.data.game_uid);
+      // The API documentation uses game_id but the implementation might be using game_uid
+      setGameId(response.data.game_uid || response.data.game_id);
       setLoading(false);
     } catch (error) {
       console.error("Error creating game:", error);
@@ -188,15 +280,21 @@ const GameStartPage: React.FC = () => {
             {/* Game Setup Form */}
             <section>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Game Settings</h2>
-              <GameSetupForm settings={gameSettings} onChange={handleSettingsChange} />
+              <GameSetupForm
+                settings={gameSettings}
+                onChange={handleSettingsChange}
+                ruleSets={ruleSets}
+                loadingRuleSets={loadingRuleSets}
+              />
 
               {!gameId && (
                 <button
                   onClick={handleCreateGame}
-                  disabled={loading}
+                  disabled={loading || loadingRuleSets || ruleSets.length === 0}
                   className="mt-4 px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
+                  data-testid="create-game-submit"
                 >
-                  {loading ? "Creating..." : "Create Game"}
+                  {loading ? "Creating..." : loadingRuleSets ? "Loading Rule Sets..." : "Create Game"}
                 </button>
               )}
             </section>

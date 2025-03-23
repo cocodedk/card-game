@@ -63,6 +63,64 @@ Start a game that is in the waiting state. Only the creator can start the game.
   }
   ```
 
+### List Game Rule Sets
+
+Get a list of all available game rule sets.
+
+- **URL**: `/api/game-rules/`
+- **Method**: `GET`
+- **Response**:
+  ```json
+  {
+    "rule_sets": [
+      {
+        "id": "string",
+        "name": "string",
+        "description": "string",
+        "version": "string"
+      }
+    ]
+  }
+  ```
+
+### Create Rule Set
+
+Create a custom rule set for games.
+
+- **URL**: `/api/game-rules/create/`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "name": "string",
+    "description": "string",
+    "card_actions": {
+      // Card action mappings
+    },
+    "targeting_rules": {
+      // Rules for targeting players
+    },
+    "turn_flow": {
+      // Rules for turn progression
+    },
+    "win_conditions": [
+      // Conditions that determine a winner
+    ],
+    "deck_configuration": {
+      // Optional configuration for the deck
+    }
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "id": "string",
+    "name": "string",
+    "description": "string",
+    "version": "string"
+  }
+  ```
+
 ## Game State Endpoint
 
 ### Get Game State

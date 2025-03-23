@@ -43,12 +43,12 @@ services:
       - ./frontend:/app/frontend
       - ./backend:/app/backend
       - ./.cursor/rules:/app/.cursor/rules
-      - /app/frontend/node_modules
+      - frontend_node_modules:/app/frontend/node_modules
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
-    command: npm run dev
+    command: sh -c "cd /app/frontend && npm install && npm run dev"
     depends_on:
       backend:
         condition: service_healthy
@@ -61,8 +61,8 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4J_dbms_memory_pagecache_size=1G
-      - NEO4J_dbms.memory.heap.initial_size=1G
-      - NEO4J_dbms_memory_heap_max__size=1G
+      - NEO4J_dbms_memory_heap_initial_size=1G
+      - NEO4J_dbms_memory_heap_max_size=1G
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
@@ -91,3 +91,4 @@ volumes:
   neo4j_data:
   neo4j_logs:
   redis_data:
+  frontend_node_modules:
