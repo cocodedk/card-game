@@ -261,7 +261,7 @@ const GameStartPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900" data-testid="game-start-page">
       <header className="bg-white dark:bg-gray-800 shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Start New Game</h1>
@@ -271,7 +271,11 @@ const GameStartPage: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
           {error && (
-            <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div
+              className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+              role="alert"
+              data-testid="game-error-message"
+            >
               <span className="block sm:inline">{error}</span>
             </div>
           )}
@@ -299,9 +303,18 @@ const GameStartPage: React.FC = () => {
               )}
             </section>
 
+            {/* Display game ID when created */}
+            {gameId && (
+              <div data-testid="game-id" className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md">
+                <p className="text-gray-800 dark:text-gray-200">
+                  <span className="font-medium">Game ID:</span> {gameId}
+                </p>
+              </div>
+            )}
+
             {/* Player Invite Section - Only show if game has been created */}
             {gameId && (
-              <section>
+              <section data-testid="invite-section-container">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Invite Players</h2>
                 <PlayerInviteSection
                   invitedPlayers={invitedPlayers}
@@ -313,7 +326,7 @@ const GameStartPage: React.FC = () => {
 
             {/* AI Player Config - Only show if useAI is true and game has been created */}
             {gameSettings.useAI && gameId && (
-              <section>
+              <section data-testid="ai-section-container">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">AI Players</h2>
                 <AIPlayerConfig
                   maxAIPlayers={gameSettings.maxPlayers - invitedPlayers.length - 1} // -1 for the current player
@@ -329,6 +342,7 @@ const GameStartPage: React.FC = () => {
                   onClick={handleStartGame}
                   disabled={loading}
                   className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 text-lg font-medium"
+                  data-testid="start-game-button"
                 >
                   {loading ? "Starting..." : "Start Game"}
                 </button>

@@ -23,13 +23,17 @@ describe('Card Component', () => {
   it('renders card with correct suit and value', () => {
     render(<Card {...mockProps} />);
 
-    expect(screen.getByText('8♥')).toBeInTheDocument();
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue.textContent).toBe('8');
+    expect(cardSuit.textContent).toBe('♥');
   });
 
   it('handles card play when playable', () => {
     render(<Card {...mockProps} />);
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByTestId('card'));
 
     expect(mockProps.onPlay).toHaveBeenCalledWith(mockCard);
   });
@@ -37,13 +41,17 @@ describe('Card Component', () => {
   it('disables card when not playable', () => {
     render(<Card {...mockProps} isPlayable={false} />);
 
-    expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByTestId('card')).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('applies correct color for hearts suit', () => {
     render(<Card {...mockProps} />);
 
-    expect(screen.getByRole('button')).toHaveClass('text-red-600');
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue).toHaveClass('text-red-600');
+    expect(cardSuit).toHaveClass('text-red-600');
   });
 
   it('applies correct color for diamonds suit', () => {
@@ -54,7 +62,11 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByRole('button')).toHaveClass('text-red-600');
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue).toHaveClass('text-red-600');
+    expect(cardSuit).toHaveClass('text-red-600');
   });
 
   it('applies correct color for spades suit', () => {
@@ -65,7 +77,11 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByRole('button')).toHaveClass('text-gray-900');
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue).toHaveClass('text-gray-900');
+    expect(cardSuit).toHaveClass('text-gray-900');
   });
 
   it('applies correct color for clubs suit', () => {
@@ -76,13 +92,21 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByRole('button')).toHaveClass('text-gray-900');
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue).toHaveClass('text-gray-900');
+    expect(cardSuit).toHaveClass('text-gray-900');
   });
 
   it('displays correct suit symbol for hearts', () => {
     render(<Card {...mockProps} />);
 
-    expect(screen.getByText('8♥')).toBeInTheDocument();
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue.textContent).toBe('8');
+    expect(cardSuit.textContent).toBe('♥');
   });
 
   it('displays correct suit symbol for diamonds', () => {
@@ -93,7 +117,11 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByText('8♦')).toBeInTheDocument();
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue.textContent).toBe('8');
+    expect(cardSuit.textContent).toBe('♦');
   });
 
   it('displays correct suit symbol for spades', () => {
@@ -104,7 +132,11 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByText('8♠')).toBeInTheDocument();
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue.textContent).toBe('8');
+    expect(cardSuit.textContent).toBe('♠');
   });
 
   it('displays correct suit symbol for clubs', () => {
@@ -115,30 +147,36 @@ describe('Card Component', () => {
       />
     );
 
-    expect(screen.getByText('8♣')).toBeInTheDocument();
+    const cardValue = screen.getByTestId('card-value');
+    const cardSuit = screen.getByTestId('card-suit');
+
+    expect(cardValue.textContent).toBe('8');
+    expect(cardSuit.textContent).toBe('♣');
   });
 
   it('applies playable styles when card is playable', () => {
     render(<Card {...mockProps} />);
 
-    expect(screen.getByRole('button')).toHaveClass('playable');
+    expect(screen.getByTestId('card')).toHaveClass('cursor-pointer');
+    expect(screen.getByTestId('card')).toHaveClass('border-blue-500');
   });
 
   it('does not apply playable styles when card is not playable', () => {
     render(<Card {...mockProps} isPlayable={false} />);
 
-    expect(screen.getByRole('button')).not.toHaveClass('playable');
+    expect(screen.getByTestId('card')).toHaveClass('cursor-not-allowed');
+    expect(screen.getByTestId('card')).toHaveClass('border-gray-300');
   });
 
   it('applies hover effect styles when playable', () => {
     render(<Card {...mockProps} />);
 
-    expect(screen.getByRole('button')).toHaveClass('hover:scale-110');
+    expect(screen.getByTestId('card')).toHaveClass('hover:scale-105');
   });
 
   it('does not apply hover effect styles when not playable', () => {
     render(<Card {...mockProps} isPlayable={false} />);
 
-    expect(screen.getByRole('button')).not.toHaveClass('hover:scale-110');
+    expect(screen.getByTestId('card')).not.toHaveClass('hover:scale-105');
   });
 });

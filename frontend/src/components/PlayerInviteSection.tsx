@@ -79,9 +79,9 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
   }, [searchTerm]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="player-invite-section">
       {remainingSlots <= 0 ? (
-        <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md">
+        <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md" data-testid="max-players-warning">
           <p className="text-yellow-800 dark:text-yellow-200 text-sm">
             Maximum number of players reached. You cannot invite more players.
           </p>
@@ -100,28 +100,31 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Enter username or email"
                 className="flex-grow px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-l-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                data-testid="player-search-input"
               />
               <button
                 onClick={handleSearch}
                 disabled={loading || !searchTerm.trim()}
                 className="px-4 py-2 bg-primary-600 text-white rounded-r-md hover:bg-primary-700 disabled:opacity-50"
+                data-testid="search-button"
               >
                 {loading ? "..." : "Search"}
               </button>
             </div>
-            {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
+            {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="search-error">{error}</p>}
           </div>
 
           {searchResults.length > 0 && (
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-4">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-4" data-testid="search-results">
               <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Results</h3>
               <ul className="divide-y divide-gray-200 dark:divide-gray-600">
-                {searchResults.map((player) => (
-                  <li key={player.id} className="py-2 flex justify-between items-center">
+                {searchResults.map((player, index) => (
+                  <li key={player.id} className="py-2 flex justify-between items-center" data-testid={`search-result-${index}`}>
                     <span className="text-gray-800 dark:text-gray-200">{player.username}</span>
                     <button
                       onClick={() => onInvitePlayer(player.id)}
                       className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 text-sm"
+                      data-testid={`invite-button-${index}`}
                     >
                       Invite
                     </button>
@@ -134,11 +137,11 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
       )}
 
       {invitedPlayers.length > 0 && (
-        <div>
+        <div data-testid="invited-players-section">
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invited Players</h3>
           <ul className="divide-y divide-gray-200 dark:divide-gray-600 bg-gray-50 dark:bg-gray-700 rounded-md p-4">
-            {invitedPlayers.map((player) => (
-              <li key={player.id} className="py-2 flex justify-between items-center">
+            {invitedPlayers.map((player, index) => (
+              <li key={player.id} className="py-2 flex justify-between items-center" data-testid={`invited-player-${index}`}>
                 <span className="text-gray-800 dark:text-gray-200">{player.username}</span>
                 <span
                   className={`px-2 py-1 rounded text-xs ${
@@ -148,6 +151,7 @@ const PlayerInviteSection: React.FC<PlayerInviteSectionProps> = ({
                       ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                       : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                   }`}
+                  data-testid={`player-status-${index}`}
                 >
                   {player.status.charAt(0).toUpperCase() + player.status.slice(1)}
                 </span>

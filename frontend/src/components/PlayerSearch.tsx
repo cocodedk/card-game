@@ -26,7 +26,7 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelectPlayer, excludePlay
 
       try {
         const response = await ApiService.searchPlayers(term);
-        if (ApiService.isApiError(response)) {
+        if (response.error) {
           throw new Error(response.error);
         }
 

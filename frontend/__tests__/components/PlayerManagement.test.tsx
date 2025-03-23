@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import PlayerManagement from '../../src/components/PlayerManagement';
 import { Player } from '../../src/types/game';
 
@@ -88,14 +88,28 @@ describe('PlayerManagement Component', () => {
   it('displays correct number of players', () => {
     render(<PlayerManagement {...mockProps} />);
 
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
+    const playerItems = screen.getAllByRole('listitem');
+    expect(playerItems).toHaveLength(2);
+
+    // Check that each player's name appears in the list
+    const player1NameEl = screen.getByText((content, element) => {
+      return element?.textContent === 'Player 1 (You)';
+    });
+    const player2NameEl = screen.getByText('Player 2');
+
+    expect(player1NameEl).toBeInTheDocument();
+    expect(player2NameEl).toBeInTheDocument();
   });
 
   it('shows current player indicator', () => {
     render(<PlayerManagement {...mockProps} />);
 
-    expect(screen.getByText('Player 1 (You)')).toBeInTheDocument();
+    const playerItems = screen.getAllByRole('listitem');
+    const currentPlayerItem = playerItems[0];
+
+    expect(within(currentPlayerItem).getByText((content, element) => {
+      return element?.textContent === 'Player 1 (You)';
+    })).toBeInTheDocument();
   });
 
   it('applies ready styling to ready button', () => {

@@ -64,7 +64,7 @@ describe('GameActions Component', () => {
   });
 
   it('handles announce one card action', () => {
-    render(<GameActions {...mockProps} />);
+    render(<GameActions {...mockProps} cardsInHand={1} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Announce One Card' }));
 

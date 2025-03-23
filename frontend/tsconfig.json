@@ -26,12 +26,18 @@
     },
     "typeRoots": [
       "./node_modules/@types"
+    ],
+    "types": [
+      "node",
+      "jest",
+      "@testing-library/jest-dom"
     ]
   },
   "include": [
     "next-env.d.ts",
     "react-app-env.d.ts",
     "jsx.d.ts",
+    "jest-dom.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "src/types"

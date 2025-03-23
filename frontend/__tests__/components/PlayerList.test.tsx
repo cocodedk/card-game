@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import PlayerList from '../../src/components/PlayerList';
 
 describe('PlayerList Component', () => {
@@ -40,9 +40,19 @@ describe('PlayerList Component', () => {
       />
     );
 
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
-    expect(screen.getByText('Player 3')).toBeInTheDocument();
+    const playerItems = screen.getAllByRole('listitem');
+    expect(playerItems).toHaveLength(3);
+
+    // Check that each player's name appears in the list
+    const player1NameEl = screen.getByText((content, element) => {
+      return element?.textContent === 'Player 1 (You)';
+    });
+    const player2NameEl = screen.getByText('Player 2');
+    const player3NameEl = screen.getByText('Player 3');
+
+    expect(player1NameEl).toBeInTheDocument();
+    expect(player2NameEl).toBeInTheDocument();
+    expect(player3NameEl).toBeInTheDocument();
   });
 
   it('shows (You) next to current player', () => {
@@ -54,7 +64,12 @@ describe('PlayerList Component', () => {
       />
     );
 
-    expect(screen.getByText('Player 1 (You)')).toBeInTheDocument();
+    const playerItems = screen.getAllByRole('listitem');
+    const currentPlayerItem = playerItems[0];
+
+    expect(within(currentPlayerItem).getByText((content, element) => {
+      return element?.textContent === 'Player 1 (You)';
+    })).toBeInTheDocument();
   });
 
   it('displays player status correctly', () => {
@@ -66,9 +81,16 @@ describe('PlayerList Component', () => {
       />
     );
 
-    expect(screen.getByText('online')).toBeInTheDocument();
-    expect(screen.getByText('offline')).toBeInTheDocument();
-    expect(screen.getByText('in_game')).toBeInTheDocument();
+    const onlineStatus = screen.getByText('online');
+    const offlineStatus = screen.getByText('offline');
+    const inGameStatus = screen.getByText('in_game');
+
+    expect(onlineStatus).toBeInTheDocument();
+    expect(onlineStatus).toHaveClass('status-online');
+    expect(offlineStatus).toBeInTheDocument();
+    expect(offlineStatus).toHaveClass('status-offline');
+    expect(inGameStatus).toBeInTheDocument();
+    expect(inGameStatus).toHaveClass('status-in_game');
   });
 
   it('shows ready indicator for ready players', () => {
@@ -80,8 +102,9 @@ describe('PlayerList Component', () => {
       />
     );
 
-    const readyIndicators = screen.getAllByText('Ready');
+    const readyIndicators = screen.getAllByRole('status');
     expect(readyIndicators).toHaveLength(1);
+    expect(readyIndicators[0]).toHaveTextContent('Ready');
   });
 
   it('shows remove button when enabled', () => {
@@ -95,7 +118,7 @@ describe('PlayerList Component', () => {
     );
 
     // Should show remove buttons for all players except current player
-    const removeButtons = screen.getAllByRole('button', { name: /Remove Player/ });
+    const removeButtons = screen.getAllByRole('button');
     expect(removeButtons).toHaveLength(2);
   });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import PlayerSearch from '../../src/components/PlayerSearch';
 import ApiService from '../../src/services/api';
 
@@ -26,17 +27,32 @@ describe('PlayerSearch Component', () => {
   });
 
   it('shows loading state while searching', async () => {
+    // Mock implementation with a delay to ensure loading state is visible
+    (ApiService.searchPlayers as jest.Mock).mockImplementationOnce(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            data: { players: mockPlayers, total_count: 2 },
+          });
+        }, 500);
+      });
+    });
+
     render(<PlayerSearch onSelectPlayer={mockOnSelectPlayer} />);
 
     fireEvent.change(screen.getByPlaceholderText('Search players...'), {
       target: { value: 'test' },
     });
 
-    expect(screen.getByText('Searching...')).toBeInTheDocument();
+    // Wait for the loading state to appear
+    await waitFor(() => {
+      expect(screen.getByText('Searching...')).toBeInTheDocument();
+    });
 
+    // Wait for the loading state to disappear
     await waitFor(() => {
       expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
-    });
+    }, { timeout: 1000 });
   });
 
   it('displays search results', async () => {

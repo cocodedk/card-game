@@ -42,13 +42,13 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="game-setup-form">
       <div>
         <label htmlFor="ruleSetId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Rule Set
         </label>
         {loadingRuleSets ? (
-          <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded-md w-full"></div>
+          <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded-md w-full" data-testid="rule-sets-loading"></div>
         ) : (
           <>
             <select
@@ -70,7 +70,7 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
               )}
             </select>
             {settings.ruleSetId && ruleSets.length > 0 && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400" data-testid="rule-set-description">
                 {ruleSets.find(rs => rs.id === settings.ruleSetId)?.description || "No description available."}
               </p>
             )}
@@ -107,7 +107,7 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
             value={settings.maxPlayers}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-            data-testid="max-players-input"
+            data-testid="max-players-select"
           >
             <option value={2}>2 Players</option>
             <option value={3}>3 Players</option>
@@ -143,7 +143,7 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
             data-testid="time-limit-input"
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400" data-testid="time-limit-help">
             Set to 0 for no time limit, or between 5-120 minutes.
           </p>
         </div>
@@ -156,6 +156,7 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
             checked={settings.useAI}
             onChange={handleChange}
             className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            data-testid="use-ai-checkbox"
           />
           <label htmlFor="useAI" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
             Include AI Players
@@ -164,7 +165,7 @@ const GameSetupForm: React.FC<GameSetupFormProps> = ({
       </div>
 
       {settings.gameType === "tournament" && (
-        <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md mt-4">
+        <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md mt-4" data-testid="tournament-info">
           <p className="text-yellow-800 dark:text-yellow-200 text-sm">
             Tournament mode will create multiple rounds of games. Players will be matched based on their performance.
           </p>

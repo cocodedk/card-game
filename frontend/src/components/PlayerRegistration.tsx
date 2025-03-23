@@ -144,19 +144,19 @@ const PlayerRegistration: React.FC = () => {
       <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">Player Registration</h2>
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" data-testid="success-message">
           {success}
         </div>
       )}
 
       {/* Display general errors at the top of the form */}
       {errors.general && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" data-testid="general-error">
           {getErrorMessage('general')}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-testid="registration-form">
         <div className="form-group">
           <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Username*
@@ -169,8 +169,9 @@ const PlayerRegistration: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="username-input"
           />
-          {errors.username && <div className="text-red-500 text-sm mt-1">{getErrorMessage('username')}</div>}
+          {errors.username && <div className="text-red-500 text-sm mt-1" data-testid="username-error">{getErrorMessage('username')}</div>}
         </div>
 
         <div className="form-group">
@@ -186,8 +187,9 @@ const PlayerRegistration: React.FC = () => {
             required
             className="input w-full"
             placeholder="Your in-game name"
+            data-testid="callsign-input"
           />
-          {errors.callsign && <div className="text-red-500 text-sm mt-1">{getErrorMessage('callsign')}</div>}
+          {errors.callsign && <div className="text-red-500 text-sm mt-1" data-testid="callsign-error">{getErrorMessage('callsign')}</div>}
         </div>
 
         <div className="form-group">
@@ -202,8 +204,9 @@ const PlayerRegistration: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="email-input"
           />
-          {errors.email && <div className="text-red-500 text-sm mt-1">{getErrorMessage('email')}</div>}
+          {errors.email && <div className="text-red-500 text-sm mt-1" data-testid="email-error">{getErrorMessage('email')}</div>}
         </div>
 
         <div className="form-group">
@@ -218,8 +221,9 @@ const PlayerRegistration: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="password-input"
           />
-          {errors.password && <div className="text-red-500 text-sm mt-1">{getErrorMessage('password')}</div>}
+          {errors.password && <div className="text-red-500 text-sm mt-1" data-testid="password-error">{getErrorMessage('password')}</div>}
         </div>
 
         <div className="form-group">
@@ -234,8 +238,9 @@ const PlayerRegistration: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="confirm-password-input"
           />
-          {errors.confirmPassword && <div className="text-red-500 text-sm mt-1">{getErrorMessage('confirmPassword')}</div>}
+          {errors.confirmPassword && <div className="text-red-500 text-sm mt-1" data-testid="confirm-password-error">{getErrorMessage('confirmPassword')}</div>}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -250,8 +255,9 @@ const PlayerRegistration: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               className="input w-full"
+              data-testid="first-name-input"
             />
-            {errors.firstName && <div className="text-red-500 text-sm mt-1">{getErrorMessage('firstName')}</div>}
+            {errors.firstName && <div className="text-red-500 text-sm mt-1" data-testid="first-name-error">{getErrorMessage('firstName')}</div>}
           </div>
 
           <div className="form-group">
@@ -265,8 +271,9 @@ const PlayerRegistration: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               className="input w-full"
+              data-testid="last-name-input"
             />
-            {errors.lastName && <div className="text-red-500 text-sm mt-1">{getErrorMessage('lastName')}</div>}
+            {errors.lastName && <div className="text-red-500 text-sm mt-1" data-testid="last-name-error">{getErrorMessage('lastName')}</div>}
           </div>
         </div>
 
@@ -281,14 +288,16 @@ const PlayerRegistration: React.FC = () => {
             value={formData.dateOfBirth}
             onChange={handleChange}
             className="input w-full"
+            data-testid="date-of-birth-input"
           />
-          {errors.dateOfBirth && <div className="text-red-500 text-sm mt-1">{getErrorMessage('dateOfBirth')}</div>}
+          {errors.dateOfBirth && <div className="text-red-500 text-sm mt-1" data-testid="date-of-birth-error">{getErrorMessage('dateOfBirth')}</div>}
         </div>
 
         <button
           type="submit"
           className="btn-primary w-full mt-6"
           disabled={isLoading}
+          data-testid="register-button"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">

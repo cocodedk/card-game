@@ -86,12 +86,12 @@ const LoginForm: React.FC = () => {
 
       {/* Display general errors at the top of the form */}
       {errors.general && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" data-testid="login-error-general">
           {errors.general}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
         <div className="form-group">
           <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Username
@@ -104,8 +104,9 @@ const LoginForm: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="username-input"
           />
-          {errors.username && <div className="text-red-500 text-sm mt-1">{errors.username}</div>}
+          {errors.username && <div className="text-red-500 text-sm mt-1" data-testid="username-error">{errors.username}</div>}
         </div>
 
         <div className="form-group">
@@ -120,8 +121,9 @@ const LoginForm: React.FC = () => {
             onChange={handleChange}
             required
             className="input w-full"
+            data-testid="password-input"
           />
-          {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password}</div>}
+          {errors.password && <div className="text-red-500 text-sm mt-1" data-testid="password-error">{errors.password}</div>}
         </div>
 
         <div className="flex items-center justify-between">
@@ -131,6 +133,7 @@ const LoginForm: React.FC = () => {
               name="remember-me"
               type="checkbox"
               className="checkbox"
+              data-testid="remember-me-checkbox"
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
               Remember me
@@ -138,7 +141,7 @@ const LoginForm: React.FC = () => {
           </div>
 
           <div className="text-sm">
-            <a href="#" className="text-primary-600 hover:text-primary-500">
+            <a href="#" className="text-primary-600 hover:text-primary-500" data-testid="forgot-password-link">
               Forgot your password?
             </a>
           </div>
@@ -148,6 +151,7 @@ const LoginForm: React.FC = () => {
           type="submit"
           className="btn-primary w-full"
           disabled={isLoading}
+          data-testid="login-button"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">

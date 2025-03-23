@@ -12,12 +12,27 @@ const SpecialCardActions: React.FC<SpecialCardActionsProps> = ({
   availablePlayers,
   cardInPlay,
 }) => {
+  const handleSuitSelect = (suit: string) => {
+    onSuitSelect?.(suit);
+    onClose?.();
+  };
+
+  const handleTargetSelect = (playerId: string) => {
+    onTargetSelect?.(playerId);
+    onClose?.();
+  };
+
+  const handleCounterAction = (action: 'accept' | 'counter') => {
+    onCounterAction?.(action);
+    onClose?.();
+  };
+
   const renderSuitSelection = () => (
     <div className="grid grid-cols-2 gap-4" data-testid="suit-selection">
       {['hearts', 'diamonds', 'clubs', 'spades'].map((suit) => (
         <button
           key={suit}
-          onClick={() => onSuitSelect?.(suit)}
+          onClick={() => handleSuitSelect(suit)}
           className="p-4 border rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           data-testid={`suit-${suit}`}
         >
@@ -35,7 +50,7 @@ const SpecialCardActions: React.FC<SpecialCardActionsProps> = ({
       {availablePlayers?.map((player) => (
         <button
           key={player.id}
-          onClick={() => onTargetSelect?.(player.id)}
+          onClick={() => handleTargetSelect(player.id)}
           className="w-full p-3 text-left border rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           data-testid={`player-${player.id}`}
         >
@@ -55,14 +70,14 @@ const SpecialCardActions: React.FC<SpecialCardActionsProps> = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <button
-          onClick={() => onCounterAction?.('accept')}
+          onClick={() => handleCounterAction('accept')}
           className="p-3 border rounded-lg bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           data-testid="accept-action"
         >
           Accept
         </button>
         <button
-          onClick={() => onCounterAction?.('counter')}
+          onClick={() => handleCounterAction('counter')}
           className="p-3 border rounded-lg bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
           data-testid="counter-action-button"
         >

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ModalProps } from '../types/game';
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, className = '' }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -26,7 +26,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     >
       <div className="fixed inset-0 bg-black opacity-50" />
       <div
-        className="relative bg-white rounded-lg shadow-xl p-6 w-96 max-w-full mx-4"
+        className={`modal relative bg-white rounded-lg shadow-xl p-6 w-96 max-w-full mx-4 ${className}`.trim()}
         onClick={e => e.stopPropagation()}
       >
         <button

@@ -57,7 +57,7 @@ const GameActions: React.FC<GameActionsProps> = ({
     );
   };
 
-  const shouldShowAnnounceOneCard = isCurrentPlayer && cardsInHand === 2 && !hasAnnouncedOneCard;
+  const canAnnounceOneCard = isCurrentPlayer && cardsInHand === 1 && !hasAnnouncedOneCard;
 
   return (
     <div
@@ -96,19 +96,22 @@ const GameActions: React.FC<GameActionsProps> = ({
       >
         Pass Turn
       </button>
-      {cardsInHand === 1 && !hasAnnouncedOneCard && isCurrentPlayer && (
-        <button
-          data-testid="announce-one-card-button"
-          className={`
-            px-4 py-2 rounded-lg font-medium transition-all duration-200
-            focus:outline-none focus:ring-2 focus:ring-offset-2
-            bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500
-          `}
-          onClick={onAnnounceOneCard}
-        >
-          Announce One Card
-        </button>
-      )}
+      <button
+        data-testid="announce-one-card-button"
+        className={`
+          px-4 py-2 rounded-lg font-medium transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-offset-2
+          ${
+            canAnnounceOneCard
+              ? 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500'
+              : 'bg-yellow-300 text-white cursor-not-allowed'
+          }
+        `}
+        onClick={onAnnounceOneCard}
+        disabled={!canAnnounceOneCard}
+      >
+        Announce One Card
+      </button>
       <div
         className="flex items-center ml-4 text-sm text-gray-600"
         data-testid="turn-status"

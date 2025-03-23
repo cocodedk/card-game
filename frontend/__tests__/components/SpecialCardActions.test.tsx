@@ -34,16 +34,16 @@ describe('SpecialCardActions Component', () => {
     render(<SpecialCardActions {...mockProps} />);
 
     expect(screen.getByText('Select a Suit')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Hearts' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Diamonds' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Clubs' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Spades' })).toBeInTheDocument();
+    expect(screen.getByTestId('suit-hearts')).toBeInTheDocument();
+    expect(screen.getByTestId('suit-diamonds')).toBeInTheDocument();
+    expect(screen.getByTestId('suit-clubs')).toBeInTheDocument();
+    expect(screen.getByTestId('suit-spades')).toBeInTheDocument();
   });
 
   it('handles suit selection', () => {
     render(<SpecialCardActions {...mockProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hearts' }));
+    fireEvent.click(screen.getByTestId('suit-hearts'));
 
     expect(mockProps.onSuitSelect).toHaveBeenCalledWith('hearts');
     expect(mockProps.onClose).toHaveBeenCalled();
@@ -52,15 +52,15 @@ describe('SpecialCardActions Component', () => {
   it('renders target selection modal', () => {
     render(<SpecialCardActions {...mockProps} actionType="target-player" />);
 
-    expect(screen.getByText('Select a Target')).toBeInTheDocument();
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
+    expect(screen.getByText('Select a Target Player')).toBeInTheDocument();
+    expect(screen.getByTestId('player-player1')).toBeInTheDocument();
+    expect(screen.getByTestId('player-player2')).toBeInTheDocument();
   });
 
   it('handles target selection', () => {
     render(<SpecialCardActions {...mockProps} actionType="target-player" />);
 
-    fireEvent.click(screen.getByText('Player 1'));
+    fireEvent.click(screen.getByTestId('player-player1'));
 
     expect(mockProps.onTargetSelect).toHaveBeenCalledWith('player1');
     expect(mockProps.onClose).toHaveBeenCalled();
@@ -69,15 +69,15 @@ describe('SpecialCardActions Component', () => {
   it('renders counter action modal', () => {
     render(<SpecialCardActions {...mockProps} actionType="counter-action" />);
 
-    expect(screen.getByText('Counter Action')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Counter' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Pass' })).toBeInTheDocument();
+    expect(screen.getByText('Counter Action Required')).toBeInTheDocument();
+    expect(screen.getByTestId('counter-action-button')).toBeInTheDocument();
+    expect(screen.getByTestId('accept-action')).toBeInTheDocument();
   });
 
   it('handles counter action', () => {
     render(<SpecialCardActions {...mockProps} actionType="counter-action" />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Counter' }));
+    fireEvent.click(screen.getByTestId('counter-action-button'));
 
     expect(mockProps.onCounterAction).toHaveBeenCalledWith('counter');
     expect(mockProps.onClose).toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe('SpecialCardActions Component', () => {
   it('handles pass action', () => {
     render(<SpecialCardActions {...mockProps} actionType="counter-action" />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
+    fireEvent.click(screen.getByTestId('accept-action'));
 
     expect(mockProps.onCounterAction).toHaveBeenCalledWith('accept');
     expect(mockProps.onClose).toHaveBeenCalled();
