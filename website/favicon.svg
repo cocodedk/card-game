@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="4" fill="#0d1117"/>
+  <!-- Card shape -->
+  <rect x="6" y="8" width="12" height="16" rx="2" fill="#f0a500" opacity="0.9"/>
+  <rect x="14" y="10" width="12" height="16" rx="2" fill="#58a6ff" opacity="0.85"/>
+  <!-- Suit symbol -->
+  <text x="9" y="20" font-size="8" fill="#0d1117" font-family="serif" font-weight="bold">♠</text>
+  <text x="17" y="22" font-size="8" fill="#0d1117" font-family="serif" font-weight="bold">♥</text>
+</svg>

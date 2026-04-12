@@ -1,128 +1,88 @@
-# Multiplayer Card Game
+# Card Game
 
-A modern multiplayer card game with authentication, real-time gameplay, and progressive design.
+A modern real-time multiplayer card game platform built with Django, Next.js, WebSockets, and Neo4j. Play customizable card games with friends — authentication, live gameplay, and game history all included.
 
-## Technology Stack
+## Website
 
-### Backend
-- Django 5.0: Web framework
-- Django REST Framework 3.14: API endpoints
-- Django Channels 4.0: WebSocket support
-- Daphne 4.0: ASGI server for Django
-- Neo4j 5.16 with Neomodel 5.2: Graph database
-- JWT: Authentication
-- Watchdog 3.0: Automatic reloading in development
-
-### Frontend
-- Next.js 14.1: React framework with SSR
-- TypeScript 5.3: Type-safe JavaScript
-- Tailwind CSS 3.4: Utility-first styling
-- TanStack Query 5.18: Data fetching and caching
-- Socket.io Client 4.7: Real-time communication
-
-### Infrastructure
-- Docker: Containerization
-- Redis 7.2: WebSocket message broker
-- Neo4j 5.16: Graph database
-- Node.js 20: JavaScript runtime
-- Python 3.12: Backend runtime
+- [English](https://cocodedk.github.io/card-game/)
+- [فارسی (Persian)](https://cocodedk.github.io/card-game/fa/)
 
 ## Features
 
-- User authentication and profiles
-- Real-time multiplayer gameplay
-- Customizable decks and cards
-- Game history and statistics
-- Responsive design for all devices
+- Real-time multiplayer gameplay via WebSockets (Django Channels + Redis)
+- JWT-based authentication with refresh tokens
+- Customizable decks and cards backed by Neo4j graph database
+- Full game state tracking, history, and statistics
+- One-command Docker Compose setup for the full stack
+- Responsive Next.js + Tailwind CSS frontend
 
-## Getting Started
+## Build from Source
 
-### Prerequisites
-- Docker and Docker Compose
-- Node.js 20+ (for local frontend development)
-- Python 3.12+ (for local backend development)
+**Prerequisites:** Docker + Docker Compose, Node.js 20+, Python 3.12+
 
-### Development Setup
+```bash
+# Clone
+git clone https://github.com/cocodedk/card-game.git
+cd card-game
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/card-game.git
-   cd card-game
-   ```
+# Full stack via Docker
+docker-compose up
 
-2. Start the development environment with Docker Compose:
-   ```
-   docker-compose up
-   ```
+# Backend only
+cd backend && pip install -r requirements.txt
+python manage.py runserver
 
-3. Access the applications:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/api/
-   - Neo4j Browser: http://localhost:7474
+# Frontend only
+cd frontend && npm install && npm run dev
+```
 
-### Manual Setup (without Docker)
+**Test:**
+```bash
+# Backend tests
+cd backend && pytest tests/ -x
 
-#### Backend
-1. Navigate to the backend directory:
-   ```
-   cd backend
-   ```
+# Frontend tests
+cd frontend && npm test
 
-2. Create a virtual environment and activate it:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+# Frontend lint
+cd frontend && npm run lint
+```
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. Run the development server with Daphne and Watchdog:
-   ```
-   watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- daphne -b 0.0.0.0 -p 8000 card_game.asgi:application
-   ```
-
-#### Frontend
-1. Navigate to the frontend directory:
-   ```
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Run the development server:
-   ```
-   npm run dev
-   ```
-
-## Project Structure
+## Architecture
 
 ```
 card-game/
-├── backend/               # Django backend
-│   ├── authentication/    # Authentication app
-│   ├── game/              # Game logic and API
-│   ├── api/               # API endpoints
-│   └── card_game/         # Django project settings
-├── frontend/              # Next.js frontend
-│   ├── public/            # Static assets
-│   └── src/               # Source code
-│       ├── components/    # React components
-│       ├── pages/         # Next.js pages
-│       ├── styles/        # CSS styles
-│       └── utils/         # Utility functions
-└── docker/                # Docker configuration
+├── backend/               ← Django 5 + DRF + Channels (Python 3.12)
+│   ├── authentication/    ← JWT auth app
+│   ├── game/              ← Game logic, WebSocket consumers, API
+│   ├── api/               ← Root API endpoints
+│   └── card_game/         ← Django settings, ASGI config
+├── frontend/              ← Next.js 14 + TypeScript + Tailwind (Node 20)
+│   └── src/               ← Components, pages, services, utils
+├── docker/                ← Dockerfiles for backend and frontend
+├── website/               ← GitHub Pages bilingual site
+└── docker-compose.yml     ← Full stack orchestration
 ```
 
-## Game Rules
+| Layer | Tech |
+|---|---|
+| Backend | Django 5, DRF 3.14, Django Channels 4, Daphne |
+| Frontend | Next.js 14, TypeScript 5.3, Tailwind CSS 3.4, TanStack Query |
+| Database | Neo4j 5.16 (Neomodel), SQLite (dev) |
+| Infra | Docker Compose, Redis 7.2, WebSockets |
 
-The game rules are implemented on the server-side to ensure consistency and prevent cheating. The rule system is designed to be modular and configurable, allowing for future updates and changes.
+## Docker
 
-## License
+```bash
+docker-compose up
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Services: `http://localhost:3000` (frontend) · `http://localhost:8000/api/` (API) · `http://localhost:7474` (Neo4j)
+
+## Author
+
+**Babak Bandpey** — [cocode.dk](https://cocode.dk) | [LinkedIn](https://linkedin.com/in/babakbandpey) | [GitHub](https://github.com/cocodedk)
+
+---
+
+Apache-2.0 | © 2026 [Cocode](https://cocode.dk) | Created by [Babak Bandpey](https://linkedin.com/in/babakbandpey)
