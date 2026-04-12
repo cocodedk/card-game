@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+# Smoke check: lint frontend and run backend tests
+echo "Running pre-commit checks..."
+
+# Frontend lint
+if [ -d "frontend" ]; then
+  cd frontend
+  npm run lint --silent
+  cd ..
+fi
+
+# Backend ruff lint (fast, no test run — keep pre-commit fast)
+if command -v ruff >/dev/null 2>&1; then
+  ruff check backend/ --quiet
+fi
+
+echo "Pre-commit checks passed."

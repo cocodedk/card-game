@@ -47,3 +47,25 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python venv
+venv/
+.venv/
+*.egg-info/
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Docker
+*.keystore
+*.jks

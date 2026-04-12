@@ -1,0 +1,44 @@
+# Card Game
+
+> Real-time multiplayer card game platform — Django + Next.js + WebSockets + Neo4j
+
+## Project
+
+- [GitHub Repository](https://github.com/cocodedk/card-game)
+- [English Website](https://cocodedk.github.io/card-game/)
+- [Persian Website](https://cocodedk.github.io/card-game/fa/)
+
+## Architecture
+
+Multi-stack project:
+- **Backend**: Django 5.0 + Django REST Framework + Django Channels (WebSockets) + Daphne ASGI — Python 3.12
+- **Frontend**: Next.js 14 + TypeScript 5.3 + Tailwind CSS 3.4 + TanStack Query — Node.js 20
+- **Database**: Neo4j 5.16 (Neomodel ORM) + Redis 7.2 (WebSocket broker)
+- **Infra**: Docker Compose (full stack), JWT authentication
+
+## Key Files
+
+- `backend/card_game/settings.py` — Django settings
+- `backend/game/consumers.py` — WebSocket game consumers
+- `backend/authentication/` — JWT auth implementation
+- `frontend/src/` — Next.js pages, components, services
+- `docker-compose.yml` — Full stack Docker orchestration
+- `CLAUDE.md` — AI session startup guide
+- `version.txt` — Semantic version (MAJOR.MINOR.PATCH)
+
+## Development
+
+```bash
+# Start full stack
+docker-compose up
+
+# Backend tests
+cd backend && pytest tests/ -x
+
+# Frontend tests + lint
+cd frontend && npm test && npm run lint
+```
+
+## Author
+
+Babak Bandpey — https://cocode.dk — https://linkedin.com/in/babakbandpey

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>بازی کارت — پلتفرم بازی کارت چندنفره آنلاین</title>
+  <meta name="description" content="بازی کارت یک پلتفرم بازی کارت چندنفره آنلاین متن‌باز است که با Django، Next.js و WebSocket ساخته شده. با دوستانتان به صورت آنی بازی کنید." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://cocodedk.github.io/card-game/fa/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="بازی کارت" />
+  <meta property="og:title" content="بازی کارت — پلتفرم بازی کارت چندنفره آنلاین" />
+  <meta property="og:description" content="پلتفرم بازی کارت چندنفره آنلاین ساخته شده با Django، Next.js و WebSocket." />
+  <meta property="og:url" content="https://cocodedk.github.io/card-game/fa/" />
+  <meta property="og:image" content="https://cocodedk.github.io/card-game/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="رابط کاربری پلتفرم بازی کارت — تاریک با جزئیات طلایی" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:locale:alternate" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="بازی کارت — پلتفرم بازی کارت چندنفره آنلاین" />
+  <meta name="twitter:description" content="پلتفرم بازی کارت چندنفره متن‌باز با Django، Next.js و WebSocket." />
+  <meta name="twitter:image" content="https://cocodedk.github.io/card-game/og.png" />
+  <meta name="twitter:image:alt" content="رابط کاربری بازی کارت" />
+
+  <!-- Hreflang alternates -->
+  <link rel="alternate" hreflang="en"        href="https://cocodedk.github.io/card-game/" />
+  <link rel="alternate" hreflang="fa"        href="https://cocodedk.github.io/card-game/fa/" />
+  <link rel="alternate" hreflang="x-default" href="https://cocodedk.github.io/card-game/" />
+
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "بازی کارت",
+    "description": "پلتفرم بازی کارت چندنفره آنلاین متن‌باز ساخته شده با Django، Next.js، WebSocket و پایگاه داده گراف Neo4j.",
+    "url": "https://cocodedk.github.io/card-game/fa/",
+    "downloadUrl": "https://github.com/cocodedk/card-game",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Linux, macOS, Windows",
+    "inLanguage": "fa",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": {
+      "@type": "Person",
+      "name": "بابک بندپی",
+      "url": "https://cocode.dk",
+      "sameAs": ["https://linkedin.com/in/babakbandpey", "https://github.com/cocodedk"]
+    },
+    "codeRepository": "https://github.com/cocodedk/card-game"
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="logo">♠ بازی کارت</div>
+    <nav>
+      <a href="#features">ویژگی‌ها</a>
+      <a href="#stack">فناوری</a>
+      <a href="#start">شروع کنید</a>
+      <a href="https://github.com/cocodedk/card-game" target="_blank" rel="noreferrer">گیت‌هاب</a>
+      <a href="../" class="lang-switch">English</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">متن‌باز · بلادرنگ</div>
+    <h1>پلتفرم <span>بازی کارت</span><br/>چندنفره آنلاین</h1>
+    <p>یک بازی کارت چندنفره مدرن و بلادرنگ ساخته شده با Django، Next.js و WebSocket. با دوستانتان بازی کنید، دک خود را شخصی‌سازی کنید و تاریخچه بازی‌هایتان را دنبال کنید.</p>
+    <div class="btn-group">
+      <a href="https://github.com/cocodedk/card-game" class="btn btn-primary" target="_blank" rel="noreferrer">مشاهده در گیت‌هاب</a>
+      <a href="#start" class="btn btn-secondary">شروع کنید</a>
+    </div>
+  </section>
+
+  <main>
+    <div class="container">
+
+      <section class="section" id="features">
+        <h2 class="section-title">ویژگی‌ها</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>گیم‌پلی بلادرنگ</h3>
+            <p>بازی زنده چندنفره با WebSocket از طریق Django Channels و Redis — بدون نیاز به بارگذاری مجدد صفحه.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>احراز هویت امن</h3>
+            <p>احراز هویت مبتنی بر JWT با توکن‌های تازه‌سازی، حفظ امنیت نشست بدون از دست دادن تجربه کاربری.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎴</div>
+            <h3>دک‌های سفارشی</h3>
+            <p>سیستم کارت و دک انعطاف‌پذیر پشتیبانی شده توسط پایگاه داده گراف Neo4j برای روابط پیچیده قوانین.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>تاریخچه بازی</h3>
+            <p>ردیابی کامل وضعیت بازی، آمار و تاریخچه — همه در پایگاه داده گراف ذخیره می‌شوند.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🐳</div>
+            <h3>آماده برای Docker</h3>
+            <p>راه‌اندازی Docker Compose با یک دستور کل پشته را اجرا می‌کند — بک‌اند، فرانت‌اند، Neo4j، Redis.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>طراحی واکنش‌گرا</h3>
+            <p>رابط کاربری مبتنی بر Tailwind CSS به صورت یکپارچه روی دسکتاپ و موبایل کار می‌کند.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="stack">
+        <h2 class="section-title">پشته فناوری</h2>
+        <div class="stack-grid">
+          <div class="stack-card">
+            <div class="stack-label">بک‌اند</div>
+            <ul>
+              <li>Django 5.0</li>
+              <li>Django REST Framework</li>
+              <li>Django Channels 4</li>
+              <li>Daphne ASGI</li>
+              <li>Python 3.12</li>
+            </ul>
+          </div>
+          <div class="stack-card">
+            <div class="stack-label">فرانت‌اند</div>
+            <ul>
+              <li>Next.js 14</li>
+              <li>TypeScript 5.3</li>
+              <li>Tailwind CSS 3.4</li>
+              <li>TanStack Query</li>
+              <li>Socket.io Client</li>
+            </ul>
+          </div>
+          <div class="stack-card">
+            <div class="stack-label">داده و زیرساخت</div>
+            <ul>
+              <li>Neo4j 5.16</li>
+              <li>Redis 7.2</li>
+              <li>Docker Compose</li>
+              <li>JWT Auth</li>
+              <li>WebSockets</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="start">
+        <h2 class="section-title">شروع کنید</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">۱</div>
+            <div class="step-content">
+              <h3>مخزن را کلون کنید</h3>
+              <pre><code>git clone https://github.com/cocodedk/card-game.git
+cd card-game</code></pre>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">۲</div>
+            <div class="step-content">
+              <h3>با Docker Compose اجرا کنید</h3>
+              <pre><code>docker-compose up</code></pre>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">۳</div>
+            <div class="step-content">
+              <h3>در مرورگر باز کنید</h3>
+              <p>فرانت‌اند: <code>http://localhost:3000</code> &nbsp;|&nbsp; API: <code>http://localhost:8000/api/</code> &nbsp;|&nbsp; Neo4j: <code>http://localhost:7474</code></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Apache-2.0 &nbsp;|&nbsp; © ۱۴۰۵ <a href="https://cocode.dk" target="_blank" rel="noreferrer">Cocode</a> &nbsp;|&nbsp; ساخته شده توسط <a href="https://linkedin.com/in/babakbandpey" target="_blank" rel="noreferrer">بابک بندپی</a></p>
+  </footer>
+</body>
+</html>
