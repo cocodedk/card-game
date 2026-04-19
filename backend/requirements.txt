@@ -9,5 +9,5 @@ neomodel==5.2.1
 python-dotenv==1.0.1
 pytest==8.0.0
 pytest-django==4.7.0
-gunicorn==21.2.0
+gunicorn==25.3.0
 watchdog==3.0.0
